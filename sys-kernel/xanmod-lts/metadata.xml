@@ -6,7 +6,7 @@
 		<name>Yachen Wang</name>
 	</maintainer>
 	<use>
-		<flag name="hardened">Use selection of hardening options recommended by Kernel Self Protection Project</flag>
 		<flag name="initramfs">Build initramfs along with the kernel.</flag>
+		<flag name="clang">Use clang compiler instead of GCC</flag>
 	</use>
 </pkgmetadata>
