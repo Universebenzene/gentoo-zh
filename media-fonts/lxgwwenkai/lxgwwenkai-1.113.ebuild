@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -43,13 +43,11 @@ FONT_S=(
 )
 
 src_unpack() {
-	# extract LxgwWenkai-${PV}/MonoLatin/ only
-	unpack ${P}.tar.gz || die
+	default
+
+	# CJK fonts are not included in the tarball
+	# need to copy them to the ${S} dir for installation
 	for font in "${WENKAI_CJK[@]}"; do
 	  cp "${DISTDIR}/${font}" "${S}"/ || die
 	done
-}
-
-src_install() {
-	font_src_install
 }
