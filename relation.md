@@ -1,6 +1,6 @@
 - Reponame: **`gentoo-zh`**
 
-(The last generation time: 2022-01-29 23:56:52 CST)
+(The last generation time: 2022-01-30 23:28:50 CST)
 
 ### Packages
 
@@ -181,7 +181,7 @@
  dev-cpp/date                                 | 3.0.1                                     |            | https://github.com/HowardHinnant/date                                                   | A date and time library based on the C++11/14/17 <chrono> header
 ----------------------------------------------|-------------------------------------------|------------|-----------------------------------------------------------------------------------------|--------------------
  dev-cpp/nameof                               | 0.10.1                                    |            | https://github.com/Neargye/nameof                                                       | Nameof operator for modern C++
-                                              | 0.10.1_p220109                            |            |                                                                                         |
+                                              | 0.10.1_p220125                            |            |                                                                                         |
 ----------------------------------------------|-------------------------------------------|------------|-----------------------------------------------------------------------------------------|--------------------
  dev-cpp/tgbot-cpp                            | 1.3                                       |            | https://github.com/reo7sp/tgbot-cpp                                                     | C++ library for Telegram bot API
                                               | 1.3_p211229                               |            |                                                                                         |
@@ -239,9 +239,11 @@
 ----------------------------------------------|-------------------------------------------|------------|-----------------------------------------------------------------------------------------|--------------------
  media-fonts/cwtex-q-fonts                    | 0.2                                       |            | https://code.google.com/p/cwtex-q-fonts/                                                | Those five TrueType fonts are transformed from cwTeX Traditional Chinese Type 1 fonts(Version 1.1).
 ----------------------------------------------|-------------------------------------------|------------|-----------------------------------------------------------------------------------------|--------------------
+ media-fonts/iansui                           | 0.920                                     |            | https://github.com/ButTaiwan/iansui                                                     | An open-source Chinese font derived from Klee One (Fontworks).
+----------------------------------------------|-------------------------------------------|------------|-----------------------------------------------------------------------------------------|--------------------
  media-fonts/jf-openhuninn                    | 1.1                                       |            | https://justfont.com/huninn/                                                            | An opensource Chinese font by justfont, based on Kosugi Maru and Varela Round
 ----------------------------------------------|-------------------------------------------|------------|-----------------------------------------------------------------------------------------|--------------------
- media-fonts/lxgwwenkai                       | 1.111                                     |            | https://lxgw.github.io/2021/01/28/Klee-Simpchin                                         | An open-source Chinese font derived from Fontworks' Klee One.
+ media-fonts/lxgwwenkai                       | 1.113                                     |            | https://lxgw.github.io/2021/01/28/Klee-Simpchin                                         | An open-source Chinese font derived from Fontworks' Klee One.
 ----------------------------------------------|-------------------------------------------|------------|-----------------------------------------------------------------------------------------|--------------------
  media-fonts/nerd-fonts                       | 2.1.0                                     |            | https://github.com/ryanoasis/nerd-fonts                                                 | Nerd Fonts is a project that patches developer targeted fonts with glyphs
 ----------------------------------------------|-------------------------------------------|------------|-----------------------------------------------------------------------------------------|--------------------
@@ -445,13 +447,14 @@
 ----------------------------------------------|-------------------------------------------|------------|-----------------------------------------------------------------------------------------|--------------------
  sys-libs/libixp                              | 0.5_p20110208-r3                          |            | https://libs.suckless.org/deprecated/libixp                                             | A stand-alone client/server 9P library including ixpc client
 ----------------------------------------------|-------------------------------------------|------------|-----------------------------------------------------------------------------------------|--------------------
- sys-process/btop                             | 1.1.2                                     |            | https://github.com/aristocratos/btop                                                    | Resources monitor. The C++ version of bashtop
+ sys-process/btop                             | 1.2.0                                     |            | https://github.com/aristocratos/btop                                                    | Resources monitor. The C++ version of bashtop
 ----------------------------------------------|-------------------------------------------|------------|-----------------------------------------------------------------------------------------|--------------------
  virtual/dist-kernel                          | 5.15.16                                   |            |                                                                                         | Virtual to depend on any Distribution Kernel
 ----------------------------------------------|-------------------------------------------|------------|-----------------------------------------------------------------------------------------|--------------------
  virtual/linux-sources                        | 3-r8                                      |            |                                                                                         | Virtual for Linux kernel sources
    sys-kernel/liquorix-sources                | 5.15_p20                                  | RD         | https://liquorix.net/                                                                   | Liquorix kernel is best one for desktop, multimedia and gaming workloads
                                               | 5.15_p21                                  |            |                                                                                         |
+                                              | 5.15_p22                                  |            |                                                                                         |
      dev-util/pahole                          | 1.23                                      |  D         | https://git.kernel.org/cgit/devel/pahole/pahole.git/                                    | pahole (Poke-a-Hole) and other DWARF2 utilities
    sys-kernel/starfive-sources                | 5.17.0_p1                                 | RD         | https://starfivetech.com                                                                | Linux kernel for StarFive's JH7100 RISC-V SoC
    sys-kernel/xanmod-hybrid                   | 5.15.15                                   | RD         | https://github.com/HougeLangley/customkernel                                            | Xanmod, Xanmod-CaCule, cjktty, patchset for main kernel tree
