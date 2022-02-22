@@ -15,7 +15,7 @@ S="${WORKDIR}/NX/etc/NX/player/packages"
 
 LICENSE="nomachine"
 SLOT="0"
-KEYWORDS="-* ~amd64"
+KEYWORDS="~amd64"
 IUSE=""
 RESTRICT="strip"
 
