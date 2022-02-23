@@ -1,6 +1,6 @@
 - Reponame: **`gentoo-zh`**
 
-(The last generation time: 2022-02-22 22:03:02 CST)
+(The last generation time: 2022-02-23 17:31:57 CST)
 
 ### Packages
 
@@ -32,29 +32,29 @@
  app-i18n/fcitx5-kkc                          | 5.0.7                                     |            | https://github.com/fcitx/fcitx5-kkc                                                     | Japanese Kana Kanji conversion engine for Fcitx5
 ----------------------------------------------|-------------------------------------------|------------|-----------------------------------------------------------------------------------------|--------------------
  app-i18n/fcitx5-meta                         | 5.0.12                                    |            | https://fcitx-im.org                                                                    | Merge this to pull in Fcitx packages
-   app-i18n/fcitx5-chinese-addons             | 5.0.10                                    | RD         | https://github.com/fcitx/fcitx5-chinese-addons                                          | Addons related to Chinese, including IME previous bundled inside fcitx4.
+   app-i18n/fcitx5-chinese-addons             | 5.0.11                                    | RD         | https://github.com/fcitx/fcitx5-chinese-addons                                          | Addons related to Chinese, including IME previous bundled inside fcitx4.
                                               | 9999                                      |            |                                                                                         |
      app-i18n/fcitx5-qt                       | 5.0.10                                    |  D, RD     | https://github.com/fcitx/fcitx5-qt                                                      | Qt library and IM module for fcitx5
                                               | 9999                                      |            |                                                                                         |
      app-i18n/libime                          | 1.0.11                                    |  D, RD     | https://fcitx-im.org/                                                                   | Fcitx5 Next generation of fcitx
                                               | 9999                                      |            |                                                                                         |
-       app-i18n/fcitx5                        | 5.0.13                                    |  D, RD     | https://fcitx-im.org/                                                                   | Fcitx5 Next generation of fcitx
+       app-i18n/fcitx5                        | 5.0.14                                    |  D, RD     | https://fcitx-im.org/                                                                   | Fcitx5 Next generation of fcitx
                                               | 9999                                      |            |                                                                                         |
          x11-libs/xcb-imdkit                  | 1.0.3                                     |  D, RD     | https://github.com/fcitx/xcb-imdkit                                                     | Input method development support for xcb
-   app-i18n/fcitx5-configtool                 | 5.0.10                                    | RD         | https://fcitx-im.org/                                                                   | Configuration module for Fcitx
+   app-i18n/fcitx5-configtool                 | 5.0.11                                    | RD         | https://fcitx-im.org/                                                                   | Configuration module for Fcitx
                                               | 9999                                      |            |                                                                                         |
-   app-i18n/fcitx5-gtk                        | 5.0.11                                    | RD         | https://github.com/fcitx/fcitx5-gtk                                                     | Gtk im module for fcitx5 and glib based dbus client library
+   app-i18n/fcitx5-gtk                        | 5.0.12                                    | RD         | https://github.com/fcitx/fcitx5-gtk                                                     | Gtk im module for fcitx5 and glib based dbus client library
                                               | 9999                                      |            |                                                                                         |
-   app-i18n/fcitx5-hangul                     | 5.0.6                                     | RD         | https://fcitx-im.org/                                                                   | Korean Hangul input method for Fcitx
+   app-i18n/fcitx5-hangul                     | 5.0.7                                     | RD         | https://fcitx-im.org/                                                                   | Korean Hangul input method for Fcitx
    app-i18n/fcitx5-rime                       | 5.0.11                                    | RD         | https://github.com/fcitx/fcitx5-rime                                                    | Rime Support for Fcitx5
                                               | 9999                                      |            |                                                                                         |
      app-i18n/rime-prelude                    | 20220122                                  |  D, RD     | https://github.com/rime/rime-prelude                                                    | Essential files for building up your Rime configuration
-   app-i18n/fcitx5-skk                        | 5.0.9                                     | RD         | https://fcitx-im.org/                                                                   | Japanese SKK input engine for Fcitx5
+   app-i18n/fcitx5-skk                        | 5.0.10                                    | RD         | https://fcitx-im.org/                                                                   | Japanese SKK input engine for Fcitx5
                                               | 9999                                      |            |                                                                                         |
 ----------------------------------------------|-------------------------------------------|------------|-----------------------------------------------------------------------------------------|--------------------
- app-i18n/fcitx5-table-extra                  | 5.0.7                                     |            | https://github.com/fcitx/fcitx5-table-extra                                             | Provides extra table for Fcitx, including Boshiamy, Zhengma, Cangjie, and Quick
+ app-i18n/fcitx5-table-extra                  | 5.0.8                                     |            | https://github.com/fcitx/fcitx5-table-extra                                             | Provides extra table for Fcitx, including Boshiamy, Zhengma, Cangjie, and Quick
 ----------------------------------------------|-------------------------------------------|------------|-----------------------------------------------------------------------------------------|--------------------
- app-i18n/fcitx5-table-other                  | 5.0.6                                     |            | https://github.com/fcitx/fcitx5-table-other                                             | Provides some other tables for Fcitx, fork from ibus-table-others, scim-tables
+ app-i18n/fcitx5-table-other                  | 5.0.7                                     |            | https://github.com/fcitx/fcitx5-table-other                                             | Provides some other tables for Fcitx, fork from ibus-table-others, scim-tables
 ----------------------------------------------|-------------------------------------------|------------|-----------------------------------------------------------------------------------------|--------------------
  app-i18n/gcin                                | 2.9.0-r2                                  |            | http://hyperrate.com/dir.php?eid=67                                                     | Another Traditional Chinese IM.
 ----------------------------------------------|-------------------------------------------|------------|-----------------------------------------------------------------------------------------|--------------------
@@ -92,9 +92,8 @@
 ----------------------------------------------|-------------------------------------------|------------|-----------------------------------------------------------------------------------------|--------------------
  app-misc/spark                               | 1.0.1                                     |            | http://zachholman.com/spark/                                                            | ▁▂▃▅▂▇ in your shell
 ----------------------------------------------|-------------------------------------------|------------|-----------------------------------------------------------------------------------------|--------------------
- app-mobilephone/scrcpy                       | 1.19                                      |            | https://blog.rom1v.com/2018/03/introducing-scrcpy/                                      | Display and control your Android device
-                                              | 1.20                                      |            |                                                                                         |
-                                              | 1.21                                      |            |                                                                                         |
+ app-mobilephone/scrcpy                       | 1.21                                      |            | https://blog.rom1v.com/2018/03/introducing-scrcpy/                                      | Display and control your Android device
+                                              | 1.23                                      |            |                                                                                         |
 ----------------------------------------------|-------------------------------------------|------------|-----------------------------------------------------------------------------------------|--------------------
  app-office/bytedance-feishu                  | 4.11.6.2                                  |            | https://www.feishu.cn/                                                                  | feishu - ByteDance's enterprise collaboration platform
 ----------------------------------------------|-------------------------------------------|------------|-----------------------------------------------------------------------------------------|--------------------
@@ -334,8 +333,6 @@
      dev-libs/libdatrie                       | 0.2.13                                    |  D, RD     | https://github.com/tlwg/libdatrie                                                       | Double-Array Trie Library
 ----------------------------------------------|-------------------------------------------|------------|-----------------------------------------------------------------------------------------|--------------------
  net-im/freetalk                              | 4.1                                       |            | http://www.gnu.org/software/freetalk/                                                   | Console based Jabber client
-----------------------------------------------|-------------------------------------------|------------|-----------------------------------------------------------------------------------------|--------------------
- net-im/telegram-desktop                      | 3.4.3                                     |            | https://desktop.telegram.org                                                            | Official desktop client for Telegram
 ----------------------------------------------|-------------------------------------------|------------|-----------------------------------------------------------------------------------------|--------------------
  net-im/telegram-purple                       | 1.4.7-r1                                  |            | https://github.com/majn/telegram-purple                                                 | Libpurple (Pidgin) plugin for using a Telegram account
                                               | 9999                                      |            |                                                                                         |
