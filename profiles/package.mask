@@ -3,9 +3,6 @@
 =dev-libs/boost-1.54.0
 =dev-util/boost-build-1.54.0
 
-# microcai, ibus-1.5 it all about shit
->=app-i18n/ibus-1.4.3
-
 # scsi <scsichen@gmail.com> (16 Nov 2007)
 # can not be compile, need fix
 =gnome-extra/drwright-0.18
@@ -41,3 +38,7 @@ net-im/instantbird
 
 # xiami stop their service
 =dev-python/fuo-xiami-0.2.4
+
+# Copri <dev_zdx7ejsg@mail.com>
+# mask it for more test, unmask it after careful consideration.
+=dev-db/mongodb-5.3*
