@@ -580,6 +580,13 @@ use_latest_release = true
 prefix = "v"
 github_account = "zozx"
 
+["media-fonts/sarasa-mono-sc-nerd"]
+source = "github"
+github = "laishulu/Sarasa-Mono-SC-Nerd"
+use_latest_release = true
+prefix = "v"
+github_account = "oatiz"
+
 ["media-fonts/tiejili"]
 source = "github"
 github = "Buernia/Tiejili"
@@ -1040,6 +1047,14 @@ prefix = "v"
 
 # only live package in gentoo-zh
 #["x11-plugins/vicious"]
+
+
+["x11-terms/wezterm-bin"]
+source = "github"
+github = "wez/wezterm"
+use_latest_release = true
+from_pattern = "(.*)-(.*)-(.*)"
+to_pattern = "\\1"
 
 # TODO
 #["x11-themes/fcitx5-breeze"]
