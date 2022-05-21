@@ -1,6 +1,6 @@
 - Reponame: **`gentoo-zh`**
 
-(The last generation time: 2022-05-13 21:32:10 CST)
+(The last generation time: 2022-05-21 15:09:55 CST)
 
 ### Packages
 
@@ -83,11 +83,11 @@
 ----------------------------------------------|-------------------------------------------|------------|-----------------------------------------------------------------------------------------|--------------------
  app-i18n/zh-autoconvert                      | 0.3.16-r5                                 |            | https://packages.debian.org/stable/source/zh-autoconvert                                | Chinese HZ/GB/BIG5/UNI/UTF7/UTF8 encodings auto-converter
 ----------------------------------------------|-------------------------------------------|------------|-----------------------------------------------------------------------------------------|--------------------
- app-misc/bcompare                            | 4.4.0.25886                               |            | http://www.scootersoftware.com/                                                         | Beyond Compare -- Compare, sync, and merge files and folders
+ app-misc/bcompare                            | 4.4.2.26348                               |            | http://www.scootersoftware.com/                                                         | Beyond Compare -- Compare, sync, and merge files and folders
 ----------------------------------------------|-------------------------------------------|------------|-----------------------------------------------------------------------------------------|--------------------
  app-misc/ccal                                | 2.5.3                                     |            | http://ccal.chinesebay.com/ccal/ccal.htm                                                | A simple command line calendar for Chinese lunar
 ----------------------------------------------|-------------------------------------------|------------|-----------------------------------------------------------------------------------------|--------------------
- app-misc/gpick                               | 0.2.6                                     |            | https://github.com/thezbyg/gpick                                                        | Advanced color picker written in C++ using GTK+ toolkit
+ app-misc/gpick                               | 0.2.6-r1                                  |            | https://github.com/thezbyg/gpick                                                        | Advanced color picker written in C++ using GTK+ toolkit
 ----------------------------------------------|-------------------------------------------|------------|-----------------------------------------------------------------------------------------|--------------------
  app-misc/jshon                               | 9999                                      |            | http://kmkeen.com/jshon/                                                                | Jshon is a JSON parser designed for maximum convenience within the shell
 ----------------------------------------------|-------------------------------------------|------------|-----------------------------------------------------------------------------------------|--------------------
@@ -273,8 +273,6 @@
 ----------------------------------------------|-------------------------------------------|------------|-----------------------------------------------------------------------------------------|--------------------
  media-fonts/jf-openhuninn                    | 1.1                                       |            | https://justfont.com/huninn/                                                            | An opensource Chinese font by justfont, based on Kosugi Maru and Varela Round
 ----------------------------------------------|-------------------------------------------|------------|-----------------------------------------------------------------------------------------|--------------------
- media-fonts/lxgwwenkai                       | 1.234                                     |            | https://lxgw.github.io/2021/01/28/Klee-Simpchin                                         | An open-source Chinese font derived from Fontworks' Klee One.
-----------------------------------------------|-------------------------------------------|------------|-----------------------------------------------------------------------------------------|--------------------
  media-fonts/nerd-fonts                       | 2.1.0                                     |            | https://github.com/ryanoasis/nerd-fonts                                                 | Nerd Fonts is a project that patches developer targeted fonts with glyphs
 ----------------------------------------------|-------------------------------------------|------------|-----------------------------------------------------------------------------------------|--------------------
  media-fonts/sarasa-gothic                    | 0.36.3                                    |            | https://github.com/be5invis/Sarasa-Gothic                                               | A CJK programming font based on Iosevka and Source Han Sans.
@@ -412,7 +410,7 @@
                                               | 1.8.0                                     |            |                                                                                         |
                                               | 1.9.0                                     |            |                                                                                         |
 ----------------------------------------------|-------------------------------------------|------------|-----------------------------------------------------------------------------------------|--------------------
- net-proxy/clash-for-windows-bin              | 0.19.17                                   |            | https://github.com/Fndroid/clash_for_windows_pkg                                        | A Windows/macOS/Linux GUI based on Clash and Electron.
+ net-proxy/clash-for-windows-bin              | 0.19.18                                   |            | https://github.com/Fndroid/clash_for_windows_pkg                                        | A Windows/macOS/Linux GUI based on Clash and Electron.
 ----------------------------------------------|-------------------------------------------|------------|-----------------------------------------------------------------------------------------|--------------------
  net-proxy/make-proxy                         | 2.0.0                                     |            | https://github.com/yueyoum/make-proxy                                                   | Socks5 proxy written in Erlang
 ----------------------------------------------|-------------------------------------------|------------|-----------------------------------------------------------------------------------------|--------------------
@@ -424,8 +422,8 @@
 ----------------------------------------------|-------------------------------------------|------------|-----------------------------------------------------------------------------------------|--------------------
  net-proxy/v2rayA                             | 1.5.6.2                                   |            | https://v2raya.org/                                                                     | web GUI of Project V which supports V2Ray, Xray, SS, SSR, Trojan and Pingtunnel
    net-proxy/Xray                             | 1.5.5                                     | RD         | https://github.com/XTLS/Xray-core                                                       | Xray, Penetrates Everything.
-     dev-libs/v2ray-domain-list-community-bin | 20220505022319                            | RD         | https://github.com/v2fly/domain-list-community                                          | Community managed domain list for V2Ray.
-     dev-libs/v2ray-geoip-bin                 | 202205050051                              | RD         | https://github.com/v2fly/geoip                                                          | GeoIP for V2Ray.
+     dev-libs/v2ray-domain-list-community-bin | 20220512180118                            | RD         | https://github.com/v2fly/domain-list-community                                          | Community managed domain list for V2Ray.
+     dev-libs/v2ray-geoip-bin                 | 202205120051                              | RD         | https://github.com/v2fly/geoip                                                          | GeoIP for V2Ray.
    net-proxy/v2ray                            | 4.45.0                                    | RD         | https://github.com/v2fly/v2ray-core                                                     | A platform for building proxies to bypass network restrictions.
    net-proxy/v2ray-bin                        | 4.44.0                                    | RD         | https://www.v2fly.org                                                                   | A platform for building proxies to bypass network restrictions.
 ----------------------------------------------|-------------------------------------------|------------|-----------------------------------------------------------------------------------------|--------------------
@@ -479,9 +477,8 @@
 ----------------------------------------------|-------------------------------------------|------------|-----------------------------------------------------------------------------------------|--------------------
  sys-process/btop                             | 1.2.6                                     |            | https://github.com/aristocratos/btop                                                    | Resources monitor. The C++ version of bashtop
 ----------------------------------------------|-------------------------------------------|------------|-----------------------------------------------------------------------------------------|--------------------
- virtual/dist-kernel                          | 5.10.113                                  |            |                                                                                         | Virtual to depend on any Distribution Kernel
-                                              | 5.15.36                                   |            |                                                                                         |
-                                              | 5.17.5                                    |            |                                                                                         |
+ virtual/dist-kernel                          | 5.15.40                                   |            |                                                                                         | Virtual to depend on any Distribution Kernel
+                                              | 5.17.8                                    |            |                                                                                         |
 ----------------------------------------------|-------------------------------------------|------------|-----------------------------------------------------------------------------------------|--------------------
  virtual/linux-sources                        | 3-r10                                     |            |                                                                                         | Virtual for Linux kernel sources
    sys-kernel/liquorix-sources                | 5.17.5                                    | RD         | https://liquorix.net/                                                                   | Liquorix kernel is best one for desktop, multimedia and gaming workloads
@@ -490,9 +487,8 @@
    sys-kernel/starfive-sources                | 5.17.1                                    | RD         | https://starfivetech.com                                                                | Linux kernel for StarFive's JH7100 RISC-V SoC
    sys-kernel/xanmod-hybrid                   | 5.15.36                                   | RD         | https://xanmod.org                                                                      | Full XanMod source, including the Gentoo patchset and other patch options.
                                               | 5.17.5                                    |            |                                                                                         |
-   sys-kernel/xanmod-kernel                   | 5.10.113                                  | RD         | https://www.kernel.org/                                                                 | XanMod lts kernel built with Gentoo patches and cjktty
-                                              | 5.15.36                                   |            |                                                                                         |
-                                              | 5.17.5                                    |            |                                                                                         |
+   sys-kernel/xanmod-kernel                   | 5.15.40                                   | RD         | https://www.kernel.org/                                                                 | XanMod lts kernel built with Gentoo patches and cjktty
+                                              | 5.17.8                                    |            |                                                                                         |
    sys-kernel/xanmod-rt                       | 5.15.12                                   | RD         | https://github.com/HougeLangley/customkernel                                            | Xanmod-RT, cjktty, uksm patchset for main kernel tree
                                               | 5.15.14                                   |            |                                                                                         |
 ----------------------------------------------|-------------------------------------------|------------|-----------------------------------------------------------------------------------------|--------------------
@@ -501,6 +497,8 @@
  www-servers/woof                             | 9999                                      |            | http://www.home.unix-ag.org/simon/woof.html                                             | an ad-hoc single file webserver
 ----------------------------------------------|-------------------------------------------|------------|-----------------------------------------------------------------------------------------|--------------------
  x11-apps/xcur2png                            | 0.7.1                                     |            | https://github.com/eworm-de/xcur2png                                                    | Convert X cursors to PNG images
+----------------------------------------------|-------------------------------------------|------------|-----------------------------------------------------------------------------------------|--------------------
+ x11-libs/libva-nvdec-driver                  | 9999                                      |            | https://github.com/elFarto/nvidia-vaapi-driver                                          | NVDEC Backend for Video Acceleration (VA) API
 ----------------------------------------------|-------------------------------------------|------------|-----------------------------------------------------------------------------------------|--------------------
  x11-misc/9menu                               | 1.8                                       |            | https://packages.debian.org/source/sid/9menu                                            | Create X menus from the shell
 ----------------------------------------------|-------------------------------------------|------------|-----------------------------------------------------------------------------------------|--------------------
