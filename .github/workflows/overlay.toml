@@ -7,6 +7,7 @@ source = "github"
 github = "ocerman/zenmonitor"
 use_latest_tag = true
 prefix = "v"
+github_account = "CHN-beta"
 
 ["app-arch/zchunk"]
 source = "github"
@@ -20,6 +21,7 @@ github_account = "HougeLangley"
 ["app-crypt/archlinux-keyring"]
 source = "git"
 git = "https://gitlab.archlinux.org/archlinux/archlinux-keyring.git"
+github_account = "HougeLangley"
 
 # TODO
 #["app-crypt/etoken-sac"]
@@ -29,6 +31,7 @@ source = "github"
 github = "CopyTranslator/CopyTranslator"
 use_latest_release = true
 prefix = "v"
+github_account = "CHN-beta"
 
 # TODO
 #["app-dicts/fcitx5-pinyin-zhwiki"]
@@ -44,11 +47,13 @@ source = "github"
 github = "marktext/marktext"
 use_latest_release = true
 prefix = "v"
+github_account = "Schroedingersdoraemon"
 
 ["app-editors/typora"]
 source = "regex"
 url = "https://typora.io/#linu://typora.io/releases/stable.html"
 regex = "typora_([\\d.]+)_amd64.deb"
+github_account = "CHN-beta"
 
 #["app-emulation/deepin-udis86"]
 
@@ -62,74 +67,84 @@ regex = "typora_([\\d.]+)_amd64.deb"
 
 #["app-i18n/dvp"]
 
-["app-i18n/fcitx"]
-source = "github"
-github = "fcitx/fcitx"
-use_latest_tag = true
+#["app-i18n/fcitx"]
+#source = "github"
+#github = "fcitx/fcitx"
+#use_latest_tag = true
 
-["app-i18n/fcitx5"]
+["app-i18n/fcitx"]
 source = "github"
 github = "fcitx/fcitx5"
 use_latest_tag = true
+github_account = "liangyongxiang"
 
-["app-i18n/fcitx5-chinese-addons"]
+["app-i18n/fcitx-chewing"]
+source = "github"
+github = "fcitx/fcitx5-chewing"
+use_latest_tag = true
+github_account = "liangyongxiang"
+
+["app-i18n/fcitx-chinese-addons"]
 source = "github"
 github = "fcitx/fcitx5-chinese-addons"
 use_latest_tag = true
+github_account = "liangyongxiang"
 
-["app-i18n/fcitx5-configtool"]
+["app-i18n/fcitx-configtool"]
 source = "github"
 github = "fcitx/fcitx5-configtool"
 use_latest_tag = true
+github_account = "liangyongxiang"
 
-["app-i18n/fcitx5-gtk"]
+["app-i18n/fcitx-gtk"]
 source = "github"
 github = "fcitx/fcitx5-gtk"
 use_latest_tag = true
+github_account = "liangyongxiang"
 
-["app-i18n/fcitx5-hangul"]
+["app-i18n/fcitx-hangul"]
 source = "github"
 github = "fcitx/fcitx5-hangul"
 use_latest_tag = true
 
-["app-i18n/fcitx5-kkc"]
+["app-i18n/fcitx-kkc"]
 source = "github"
 github = "fcitx/fcitx5-kkc"
 use_latest_tag = true
 github_account = "liuyujielol"
 
 # virtual package
-#["app-i18n/fcitx5-meta"]
+#["app-i18n/fcitx-meta"]
 
-["app-i18n/fcitx5-qt"]
+["app-i18n/fcitx-qt"]
 source = "github"
 github = "fcitx/fcitx5-qt"
 use_latest_tag = true
+github_account = "liangyongxiang"
 
-["app-i18n/fcitx5-rime"]
+["app-i18n/fcitx-rime"]
 source = "github"
 github = "fcitx/fcitx5-rime"
 use_latest_tag = true
+github_account = "liangyongxiang"
 
-["app-i18n/fcitx5-skk"]
+["app-i18n/fcitx-skk"]
 source = "github"
 github = "fcitx/fcitx5-skk"
 use_latest_tag = true
+github_account = "liuyujielol"
 
-["app-i18n/fcitx5-table-extra"]
+["app-i18n/fcitx-table-extra"]
 source = "github"
 github = "fcitx/fcitx5-table-extra"
 use_latest_tag = true
+github_account = "liangyongxiang"
 
-["app-i18n/fcitx5-table-other"]
+["app-i18n/fcitx-table-other"]
 source = "github"
 github = "fcitx/fcitx5-table-other"
 use_latest_tag = true
-
-["app-i18n/gcin"]
-source = "regex"
-url = "http://hyperrate.com/gcin-source/"
-regex = "gcin-([\\d.]+).tar.xz"
+github_account = "liangyongxiang"
 
 # TODO: need run js
 #["app-i18n/ibus-rime"]
@@ -141,12 +156,14 @@ regex = "gcin-([\\d.]+).tar.xz"
 source = "github"
 github = "fcitx/libime"
 use_latest_tag = true
+github_account = "liangyongxiang"
 
 ["app-i18n/lunar"]
 source = "debianpkg"
 debianpkg = "lunar"
 from_pattern = "-(\\d+)"
 to_pattern = ""
+github_account = "liangyongxiang"
 
 # only live package in gentoo-zh
 #["app-i18n/man-pages-zh_CN"]
@@ -179,12 +196,14 @@ regex = "bcompare-([\\d.]+).x86_64.tar.gz"
 source = "regex"
 url = "http://ccal.chinesebay.com/ccal/ccal.htm"
 regex = "<h1>CCAL-([\\d.]+)</h1>"
+github_account = "aieu"
 
 ["app-misc/gpick"]
 source = "github"
 github = "thezbyg/gpick"
 use_latest_tag = true
-prefix = "gpick-"
+prefix = "v"
+github_account = "ArchFeh"
 
 # live package only
 #["app-misc/jshon"]
@@ -203,6 +222,7 @@ source = "github"
 github = "PhrozenByte/rmtrash"
 use_latest_release = true
 prefix = "v"
+github_account = "CHN-beta"
 
 ["app-misc/spark"]
 source = "github"
@@ -215,6 +235,14 @@ source = "github"
 github = "Genymobile/scrcpy"
 use_latest_release = true
 prefix = "v"
+github_account = "tlze"
+
+["app-misc/yq-bin"]
+source = "github"
+github = "mikefarah/yq"
+use_latest_release = true
+prefix = "v"
+github_account = "oatiz"
 
 # TODO
 #["app-office/bytedance-feishu"]
@@ -223,11 +251,13 @@ prefix = "v"
 source = "regex"
 url = "https://www.freeoffice.com/de/download/programme"
 regex = "softmaker-freeoffice-[\\d.]{4}-([\\d.]+)-amd64.tgz"
+github_account = "zozx"
 
 ["app-office/wps-office"]
 source = "regex"
 url = "https://linux.wps.cn/wpslinuxlog"
 regex = "wps-office_([\\d.]+)_amd64.deb"
+github_account = "Universebenzene"
 
 # TODO
 #["app-pda/ipadcharge"]
@@ -237,12 +267,14 @@ source = "github"
 github = "romkatv/gitstatus"
 use_latest_release = true
 prefix = "v"
+github_account = "OriPoin"
 
 ["app-shells/zsh-theme-powerlevel10k"]
 source = "github"
 github = "romkatv/powerlevel10k"
 use_latest_release = true
 prefix = "v"
+github_account = "OriPoin"
 
 # TODO
 #["app-text/groff-utf8"]
@@ -261,6 +293,7 @@ source = "github"
 github = "farseerfc/ydcv-rs"
 use_latest_release = true
 prefix = "v"
+github_account = "bekcpear"
 
 ["app-vim/clang_complete"]
 source = "github"
@@ -309,36 +342,32 @@ source = "github"
 github = "HowardHinnant/date"
 use_latest_release = true
 prefix = "v"
+github_account = "CHN-beta"
 
 ["dev-cpp/nameof"]
 source = "github"
 github = "Neargye/nameof"
 use_latest_release = true
 prefix = "v"
+github_account = "CHN-beta"
 
 ["dev-cpp/tgbot-cpp"]
 source = "github"
 github = "reo7sp/tgbot-cpp"
 use_latest_release = true
 prefix = "v"
+github_account = "CHN-beta"
 
 ["dev-db/dbeaver-bin"]
 source = "regex"
-url = "https://dbeaver.io/"
-regex = "DBeaver ([\\d.]+)"
-
-["dev-libs/boost"]
-source = "regex"
-url = "https://www.boost.org/users/download/"
-regex = "Version ([\\d.]+)"
+github = "dbeaver/dbeaver"
+use_latest_release = true
+github_account = "xen0n"
 
 ["dev-libs/granite"]
 source = "github"
 github = "elementary/granite"
 use_latest_release = true
-
-# TODO
-#["dev-libs/libbacktrace"]
 
 # TODO
 #["dev-libs/libchrasis"]
@@ -357,12 +386,14 @@ source = "github"
 github = "tlwg/libthai"
 use_latest_release= true
 prefix = "v"
+github_account = "vowstar"
 
 ["dev-libs/lunar-date"]
 source = "github"
 github = "yetist/lunar-date"
 use_latest_release = true
 prefix = "v"
+github_account = "microcai"
 
 # live package
 #["dev-libs/tdlib"]
@@ -390,78 +421,73 @@ prefix = "v"
 source = "github"
 github = "conda/conda"
 use_latest_release = true
+github_account = "OriPoin"
 
 ["dev-python/conda-package-handling"]
 source = "github"
 github = "conda/conda-package-handling"
 use_latest_release = true
+github_account = "OriPoin"
 
 ["dev-python/fuo-kuwo"]
 source = "pypi"
 pypi = "fuo_kuwo"
+github_account = "wgjak47"
 
 ["dev-python/fuo-local"]
 source = "pypi"
 pypi = "fuo-local"
+github_account = "wgjak47"
 
 ["dev-python/fuo-netease"]
 source = "pypi"
 pypi = "fuo-netease"
+github_account = "wgjak47"
 
 ["dev-python/fuo-qqmusic"]
 source = "pypi"
 pypi = "fuo-qqmusic"
-
-["dev-python/imgviz"]
-source = "github"
-github = "wkentaro/imgviz"
-use_latest_tag = true
-prefix = "v"
+github_account = "wgjak47"
 
 ["dev-python/janus"]
 source = "github"
 github = "aio-libs/janus"
 use_latest_release = true
 prefix = "v"
-
-["dev-python/labelme"]
-source = "github"
-github = "wkentaro/labelme"
-use_latest_release = true
-prefix = "v"
+github_account = "wgjak47"
 
 ["dev-python/nvchecker"]
 source = "github"
 github = "lilydjwg/nvchecker"
 use_latest_tag = true
 prefix = "v"
+github_account = "liangyongxiang"
 
 ["dev-python/pycosat"]
 source = "github"
 github = "ContinuumIO/pycosat"
 use_latest_tag = true
+github_account = "OriPoin"
 
 ["dev-python/python-telegram-bot"]
 source = "github"
 github = "python-telegram-bot/python-telegram-bot"
 use_latest_release = true
 prefix = "v"
+github_account = "CHN-beta"
 
 ["dev-python/qasync"]
 source = "github"
 github = "CabbageDevelopment/qasync"
 use_latest_tag = true
 prefix = "v"
+github_account = "wgjak47"
 
 ["dev-python/structlog"]
 source = "github"
 github = "hynek/structlog"
 use_latest_release = true
-
-["dev-python/tomlkit"]
-source = "github"
-github = "sdispater/tomlkit"
-use_latest_tag = true
+github_account = "liangyongxiang"
 
 # add riscv keyword, drop after main tree keyworded
 #["dev-qt/assistant"]
@@ -497,6 +523,7 @@ prefix = "v"
 source = "git"
 git = "https://git.kernel.org/pub/scm/devel/pahole/pahole.git"
 prefix = "v"
+github_account = "HougeLangley"
 
 ["dev-util/rust-analyzer"]
 source = "github"
@@ -504,20 +531,16 @@ github = "rust-analyzer/rust-analyzer"
 use_latest_release = true
 from_pattern = "(\\d+)-(\\d+)-(\\d+)"
 to_pattern = "\\1\\2\\3"
+github_account = "liuyujielol"
 
 # TODO
 #["dev-util/v2ray-geoip-generator"]
-
-["dev-vcs/lazygit-bin"]
-source = "github"
-github = "jesseduffield/lazygit"
-use_latest_release = true
-prefix = "v"
 
 ["games-action/DDNet"]
 source = "github"
 github = "ddnet/ddnet"
 use_latest_tag = true
+github_account = "Schroedingersdoraemon"
 
 ["games-board/othello"]
 source = "regex"
@@ -725,7 +748,7 @@ prefix = "v"
 # TODO
 #["net-im/tencent-qq"]
 
-["net-im/wechat-uos"]
+["net-im/weixin-uos"]
 source = "aur"
 aur = "wechat-uos"
 from_pattern = "([\\d.]+):([\\d.]+)-([\\d.]+)"
@@ -762,8 +785,10 @@ source = "github"
 github = "pcman-bbs/pcmanx"
 use_latest_release = true
 
-# TODO: need help
-#["net-misc/postman-bin"]
+["net-misc/postman-bin"]
+source = "aur"
+aur = "postman-bin"
+strip_release = 'yes'
 
 ["net-misc/prips"]
 source = "regex"
@@ -792,6 +817,7 @@ source = "github"
 github = "c0re100/qBittorrent-Enhanced-Edition"
 use_latest_release = true
 prefix = "release-"
+github_action = "OriPoin"
 
 # TODO
 #["net-print/epson-inkjet-printer_201207w"]
@@ -886,6 +912,7 @@ prefix = "v"
 source = "github"
 github = "openSUSE/zypper"
 use_latest_tag = true
+github_account = "HougeLangley"
 
 # upstream is no longer actively maintained, ignore it
 #["sys-devel/ucc"]
@@ -965,11 +992,13 @@ prefix = "v"
 source = "github"
 github = "openSUSE/libsolv"
 use_latest_tag = true
+github_account = "HougeLangley"
 
 ["sys-libs/libzypp"]
 source = "github"
 github = "openSUSE/libzypp"
 use_latest_tag= true
+github_account = "HougeLangley"
 
 ["sys-process/btop"]
 source = "github"
@@ -1025,6 +1054,7 @@ use_latest_release = true
 source = "github"
 github = "linuxmint/slick-greeter"
 use_latest_tag= true
+github_account = "Rabenda"
 
 ["x11-misc/ly"]
 source = "github"
@@ -1048,6 +1078,7 @@ github = "wez/wezterm"
 use_latest_release = true
 from_pattern = "(.*)-(.*)-(.*)"
 to_pattern = "\\1"
+github_account = "oatiz"
 
 # TODO
 #["x11-themes/fcitx5-breeze"]
