@@ -1,6 +1,6 @@
 - Reponame: **`gentoo-zh`**
 
-(The last generation time: 2022-06-20 19:37:20 CST)
+(The last generation time: 2022-06-27 14:25:32 CST)
 
 ### Packages
 
@@ -69,7 +69,7 @@
  app-i18n/man-pages-zh_CN                     | 9999                                      |        | https://github.com/man-pages-zh/manpages-zh                                             | A somewhat comprehensive collection of Chinese Linux man pages
 ----------------------------------------------|-------------------------------------------|--------|-----------------------------------------------------------------------------------------|--------------------
  app-i18n/mozc                                | 2.26.4220_p20201212102434_p20201219202429 |        | https://github.com/google/mozc                                                          | Mozc - Japanese input method editor
-                                              | 2.26.4220_p20211115025624_p20220214004422 |        |                                                                                         |
+                                              | 2.26.4632_p20220213064411_p20220214004422 |        |                                                                                         |
                                               | 9999                                      |        |                                                                                         |
 ----------------------------------------------|-------------------------------------------|--------|-----------------------------------------------------------------------------------------|--------------------
  app-i18n/scim-chrasis                        | 9999.0.0.1                                |        | http://chrasis.berlios.de/                                                              | Chrasis SCIM binding for chinese character recognition.
@@ -98,7 +98,7 @@
 ----------------------------------------------|-------------------------------------------|--------|-----------------------------------------------------------------------------------------|--------------------
  app-misc/spark                               | 1.0.1                                     |        | http://zachholman.com/spark/                                                            | ▁▂▃▅▂▇ in your shell
 ----------------------------------------------|-------------------------------------------|--------|-----------------------------------------------------------------------------------------|--------------------
- app-misc/yq-bin                              | 4.25.2                                    |        | https://github.com/mikefarah/yq                                                         | yq is a portable command-line YAML, JSON and XML processor
+ app-misc/yq-bin                              | 4.25.3                                    |        | https://github.com/mikefarah/yq                                                         | yq is a portable command-line YAML, JSON and XML processor
 ----------------------------------------------|-------------------------------------------|--------|-----------------------------------------------------------------------------------------|--------------------
  app-mobilephone/scrcpy                       | 1.23                                      |        | https://blog.rom1v.com/2018/03/introducing-scrcpy/                                      | Display and control your Android device
                                               | 1.24                                      |        |                                                                                         |
@@ -278,7 +278,7 @@
 ----------------------------------------------|-------------------------------------------|--------|-----------------------------------------------------------------------------------------|--------------------
  media-fonts/nerd-fonts                       | 2.1.0                                     |        | https://github.com/ryanoasis/nerd-fonts                                                 | Nerd Fonts is a project that patches developer targeted fonts with glyphs
 ----------------------------------------------|-------------------------------------------|--------|-----------------------------------------------------------------------------------------|--------------------
- media-fonts/sarasa-gothic                    | 0.36.4                                    |        | https://github.com/be5invis/Sarasa-Gothic                                               | A CJK programming font based on Iosevka and Source Han Sans.
+ media-fonts/sarasa-gothic                    | 0.36.5                                    |        | https://github.com/be5invis/Sarasa-Gothic                                               | A CJK programming font based on Iosevka and Source Han Sans.
 ----------------------------------------------|-------------------------------------------|--------|-----------------------------------------------------------------------------------------|--------------------
  media-fonts/sarasa-mono-sc-nerd              | 2.1.0                                     |        | https://github.com/laishulu/Sarasa-Mono-SC-Nerd                                         | Sarasa Mono SC font patched with Nerd fonts
 ----------------------------------------------|-------------------------------------------|--------|-----------------------------------------------------------------------------------------|--------------------
@@ -307,6 +307,7 @@
  media-gfx/zw3d                               | 2022.26.00-r1                             |        | https://www.zwsoft.cn/product/zw3d/linux                                                | CAD/CAM software for 3D design and processing
 ----------------------------------------------|-------------------------------------------|--------|-----------------------------------------------------------------------------------------|--------------------
  media-gfx/zwcad                              | 2022.22.2.2.3                             |        | https://www.zwsoft.cn/product/zwcad/linux                                               | CAD software for 2D drawing, reviewing and printing work
+                                              | 2023.23.0.3.4                             |        |                                                                                         |
 ----------------------------------------------|-------------------------------------------|--------|-----------------------------------------------------------------------------------------|--------------------
  media-libs/libspiro                          | 0.3.20150131                              |        | https://github.com/fontforge/libspiro                                                   | Spiro is the creation of Raph Levien. It simplifies the drawing of beautiful curves.
 ----------------------------------------------|-------------------------------------------|--------|-----------------------------------------------------------------------------------------|--------------------
@@ -421,7 +422,7 @@
  net-proxy/clash                              | 1.10.6                                    |        | https://github.com/Dreamacro/clash                                                      | A rule-based tunnel in Go.
                                               | 1.11.0                                    |        |                                                                                         |
 ----------------------------------------------|-------------------------------------------|--------|-----------------------------------------------------------------------------------------|--------------------
- net-proxy/clash-for-windows-bin              | 0.19.21-r1                                |        | https://github.com/Fndroid/clash_for_windows_pkg                                        | A Windows/macOS/Linux GUI based on Clash and Electron.
+ net-proxy/clash-for-windows-bin              | 0.19.22                                   |        | https://github.com/Fndroid/clash_for_windows_pkg                                        | A Windows/macOS/Linux GUI based on Clash and Electron.
 ----------------------------------------------|-------------------------------------------|--------|-----------------------------------------------------------------------------------------|--------------------
  net-proxy/make-proxy                         | 2.0.0                                     |        | https://github.com/yueyoum/make-proxy                                                   | Socks5 proxy written in Erlang
 ----------------------------------------------|-------------------------------------------|--------|-----------------------------------------------------------------------------------------|--------------------
@@ -484,18 +485,16 @@
 ----------------------------------------------|-------------------------------------------|--------|-----------------------------------------------------------------------------------------|--------------------
  sys-process/btop                             | 1.2.7                                     |        | https://github.com/aristocratos/btop                                                    | Resources monitor. The C++ version of bashtop
 ----------------------------------------------|-------------------------------------------|--------|-----------------------------------------------------------------------------------------|--------------------
- virtual/dist-kernel                          | 5.15.47                                   |        |                                                                                         | Virtual to depend on any Distribution Kernel
-                                              | 5.17.14                                   |        |                                                                                         |
-                                              | 5.18.4                                    |        |                                                                                         |
+ virtual/dist-kernel                          | 5.15.49                                   |        |                                                                                         | Virtual to depend on any Distribution Kernel
+                                              | 5.18.6                                    |        |                                                                                         |
 ----------------------------------------------|-------------------------------------------|--------|-----------------------------------------------------------------------------------------|--------------------
  virtual/linux-sources                        | 3-r10                                     |        |                                                                                         | Virtual for Linux kernel sources
-   sys-kernel/liquorix-sources                | 5.17.12                                   | RD     | https://liquorix.net/                                                                   | Liquorix kernel is best one for desktop, multimedia and gaming workloads
-                                              | 5.18.5                                    |        |                                                                                         |
+   sys-kernel/liquorix-sources                | 5.18.6                                    | RD     | https://liquorix.net/                                                                   | Liquorix kernel is best one for desktop, multimedia and gaming workloads
+                                              | 5.18.7                                    |        |                                                                                         |
      dev-util/pahole                          | 1.23                                      |  D     | https://git.kernel.org/cgit/devel/pahole/pahole.git/                                    | pahole (Poke-a-Hole) and other DWARF2 utilities
    sys-kernel/starfive-sources                | 5.17.1                                    | RD     | https://starfivetech.com                                                                | Linux kernel for StarFive's JH7100 RISC-V SoC
-   sys-kernel/xanmod-kernel                   | 5.15.47                                   | RD     | https://www.kernel.org/                                                                 | XanMod lts kernel built with Gentoo patches and cjktty
-                                              | 5.17.14                                   |        |                                                                                         |
-                                              | 5.18.4                                    |        |                                                                                         |
+   sys-kernel/xanmod-kernel                   | 5.15.49                                   | RD     | https://www.kernel.org/                                                                 | XanMod lts kernel built with Gentoo patches and cjktty
+                                              | 5.18.6                                    |        |                                                                                         |
    sys-kernel/xanmod-rt                       | 5.15.12                                   | RD     | https://github.com/HougeLangley/customkernel                                            | Xanmod-RT, cjktty, uksm patchset for main kernel tree
                                               | 5.15.14                                   |        |                                                                                         |
    sys-kernel/xanmod-sources                  | 5.15.47                                   | RD     | https://xanmod.org                                                                      | Full XanMod source, including the Gentoo patchset and other patch options.
@@ -529,7 +528,7 @@
 ----------------------------------------------|-------------------------------------------|--------|-----------------------------------------------------------------------------------------|--------------------
  x11-plugins/vicious                          | 9999                                      |        | http://awesome.naquadah.org/wiki/Vicious                                                | Modular widget library for x11-wm/awesome
 ----------------------------------------------|-------------------------------------------|--------|-----------------------------------------------------------------------------------------|--------------------
- x11-terms/wezterm-bin                        | 20220408                                  |        | https://wezfurlong.org/wezterm                                                          | Bleeding edge builds of a GPU-accelerated cross-platform terminal emulator and multiplexer implemented in Rust
+ x11-terms/wezterm-bin                        | 20220624                                  |        | https://wezfurlong.org/wezterm                                                          | Bleeding edge builds of a GPU-accelerated cross-platform terminal emulator and multiplexer implemented in Rust
 ----------------------------------------------|-------------------------------------------|--------|-----------------------------------------------------------------------------------------|--------------------
  x11-themes/fcitx5-breeze                     | 1.0.0                                     |        | https://github.com/scratch-er/fcitx5-breeze                                             | Fcitx5 theme to match KDE's Breeze style.
                                               | 2.0.0-r1                                  |        |                                                                                         |
