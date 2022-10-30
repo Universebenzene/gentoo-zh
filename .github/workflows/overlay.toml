@@ -182,6 +182,12 @@ source = "regex"
 url = "https://pinyin.sogou.com/linux"
 regex = "sogoupinyin_([\\d.]+)_amd64.deb"
 
+["app-i18n/wlpinyin"]
+source = "github"
+github = "xhebox/wlpinyin"
+use_latest_tag = true
+github_account = "lujianhua"
+
 ["app-i18n/zh-autoconvert"]
 source = "regex"
 url = "https://packages.debian.org/stable/source/zh-autoconvert"
@@ -525,35 +531,13 @@ git = "https://git.kernel.org/pub/scm/devel/pahole/pahole.git"
 prefix = "v"
 github_account = "HougeLangley"
 
-["dev-util/rust-analyzer"]
-source = "github"
-github = "rust-analyzer/rust-analyzer"
-use_latest_release = true
-from_pattern = "(\\d+)-(\\d+)-(\\d+)"
-to_pattern = "\\1\\2\\3"
-github_account = "liuyujielol"
-
 # TODO
 #["dev-util/v2ray-geoip-generator"]
-
-["games-action/DDNet"]
-source = "github"
-github = "ddnet/ddnet"
-use_latest_tag = true
-github_account = "Schroedingersdoraemon"
 
 ["games-board/othello"]
 source = "regex"
 url = "http://othello-game.sourceforge.net/en/Download.html"
 regex = "([\\d.]+) is the latest stable version."
-
-["games-util/mangohud"]
-source = "github"
-github = "flightlessmango/MangoHud"
-use_latest_release = true
-prefix = "v"
-github_account = "liuyujielol"
-
 
 ["games-util/winegame-client-bin"]
 source = "regex"
@@ -629,12 +613,6 @@ github_account = "Linerre"
 #url = "https://code.google.com/archive/p/wangfonts/downloads"
 #regex = "wangfonts-([\\d.]+).zip"
 
-["media-gfx/blur-effect"]
-source = "github"
-github = "sonald/blur-effect"
-use_latest_tag = true
-prefix = "v"
-
 # live package
 #["media-gfx/byzanz"]
 #source = "git"
@@ -678,6 +656,12 @@ prefix = "v"
 
 # TODO
 #["media-sound/linnya"]
+
+["media-sound/listen1_desktop-bin"]
+source = "github"
+github = "listen1/listen1_desktop"
+use_latest_tag = true
+prefix = "v"
 
 # TODO: need run js
 #["media-sound/netease-cloud-music"]
@@ -881,6 +865,7 @@ github_account = "liuyujielol"
 source = "regex"
 url = "https://jp-minerals.org/vesta/en/download.html"
 regex = "ver. ([\\d.]+), built on"
+github_account = "CHN-beta"
 
 # TODO
 #["sci-libs/libticables2"]
@@ -1000,17 +985,16 @@ github = "openSUSE/libzypp"
 use_latest_tag= true
 github_account = "HougeLangley"
 
-["sys-process/btop"]
-source = "github"
-github = "aristocratos/btop"
-use_latest_release = true
-prefix = "v"
-github_account = "Linerre"
-
-
 # virtual, do nothing
 #["virtual/dist-kernel"]
 #["virtual/linux-sources"]
+
+["www-apps/openvscode-server-bin"]
+source = "github"
+github = "gitpod-io/openvscode-server"
+use_latest_release = true
+prefix = "openvscode-server-v"
+github_account = "liuyujielol"
 
 ["www-servers/darkhttpd"]
 source = "github"

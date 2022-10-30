@@ -22,8 +22,14 @@ IUSE=""
 
 RESRICT="mirror"
 
-DEPEND="!net-proxy/v2ray"
+DEPEND="
+	!net-proxy/v2ray
+	!dev-libs/v2ray-geoip-bin
+	!dev-libs/v2ray-domain-list-community-bin
+	!dev-libs/v2ray-domain-list-community
+"
 RDEPEND="${DEPEND}"
+BDEPEND="app-arch/unzip"
 QA_PREBUILT="
 	/usr/bin/v2ray
 	/usr/bin/v2ctl

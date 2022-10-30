@@ -8,6 +8,7 @@ inherit cmake xdg
 if [[ "${PV}" == 9999 ]]; then
 	inherit git-r3
 	EGIT_REPO_URI="https://github.com/fcitx/fcitx5.git"
+	SRC_URI=""
 else
 	MY_PN="fcitx5"
 	S="${WORKDIR}/${MY_PN}-${PV}"
@@ -21,7 +22,7 @@ SRC_URI+=" https://download.fcitx-im.org/data/en_dict-20121020.tar.gz -> fcitx-d
 
 LICENSE="BSD-1 GPL-2+ LGPL-2+ MIT"
 SLOT="5"
-IUSE="+enchant test coverage doc presage systemd wayland +X"
+IUSE="+enchant +emoji test coverage doc presage systemd wayland +X"
 REQUIRED_USE="
 	|| ( wayland X )
 	coverage? ( test )
@@ -29,14 +30,28 @@ REQUIRED_USE="
 
 RESTRICT="!test? ( test )"
 
-RDEPEND="dev-libs/glib:2
+RDEPEND="
+	emoji? ( app-i18n/unicode-cldr )
+
+	test? (
+		coverage? (
+			dev-util/lcov
+		)
+	)
+
+	doc? (
+		app-doc/doxygen
+	)
+
+	dev-libs/expat
+	dev-libs/glib:2
 	sys-apps/dbus
 	dev-libs/json-c
 	dev-libs/libfmt
 	sys-apps/util-linux
 	virtual/libiconv
 	virtual/libintl
-	x11-libs/libxkbcommon[X?]
+	x11-libs/libxkbcommon[X?,wayland?]
 	wayland? (
 		dev-libs/wayland
 		dev-libs/wayland-protocols
@@ -48,16 +63,20 @@ RDEPEND="dev-libs/glib:2
 		x11-libs/libXrender
 		x11-libs/libXinerama
 		x11-libs/libxkbfile
+		x11-libs/libxcb
+		x11-libs/xcb-util
+		x11-libs/xcb-util-keysyms
+		x11-libs/xcb-util-wm
 		~x11-libs/xcb-imdkit-1.0.3
 	)
 	x11-misc/xkeyboard-config
 	x11-libs/cairo[X?]
-	x11-libs/pango
+	x11-libs/pango[X?]
 	media-libs/fontconfig
-	enchant? ( app-text/enchant:= )
+	enchant? ( app-text/enchant:2 )
 	systemd? ( sys-apps/systemd )
 	app-text/iso-codes
-	app-i18n/unicode-cldr
+
 	dev-libs/libxml2
 	dev-libs/libevent
 	x11-libs/gdk-pixbuf:2
@@ -67,9 +86,17 @@ DEPEND="${RDEPEND}
 	virtual/pkgconfig
 "
 
+src_unpack() {
+	if [[ "${PV}" == 9999 ]]; then
+		git-r3_src_unpack
+	else
+		# avoid unpacking fcitx-data-en_dict-20121020.tar.gz
+		unpack "${P}.tar.gz"
+	fi
+}
+
 src_prepare() {
-	pwd
-	ln -s "${DISTDIR}/fcitx-data-en_dict-20121020.tar.gz" src/modules/spell/dict/en_dict-20121020.tar.gz || die
+	ln -s "${DISTDIR}/fcitx-data-en_dict-20121020.tar.gz" src/modules/spell/en_dict-20121020.tar.gz || die
 
 	cmake_src_prepare
 }
@@ -81,6 +108,7 @@ src_configure() {
 		-DENABLE_TEST=$(usex test)
 		-DENABLE_COVERAGE=$(usex coverage)
 		-DENABLE_ENCHANT=$(usex enchant)
+		-DENABLE_EMOJI=$(usex emoji)
 		-DENABLE_PRESAGE=$(usex presage)
 		-DENABLE_WAYLAND=$(usex wayland)
 		-DENABLE_X11=$(usex X)
