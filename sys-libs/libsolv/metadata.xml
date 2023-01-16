@@ -3,6 +3,7 @@
 <pkgmetadata>
 	<upstream>
 		<bugs-to>https://github.com/openSUSE/libsolv</bugs-to>
+		<remote-id type="github">openSUSE/libsolv</remote-id>
 	</upstream>
 	<maintainer type="person">
 		<email>hougelangley1987@gmail.com</email>

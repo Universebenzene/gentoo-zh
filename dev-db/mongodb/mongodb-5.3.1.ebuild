@@ -1,4 +1,4 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -212,7 +212,7 @@ src_configure() {
 }
 
 src_compile() {
-	PREFIX="${EPREFIX}/usr" ./buildscripts/scons.py "${scons_opts[@]}" install-core
+	PREFIX="${EPREFIX}/usr" ./buildscripts/scons.py "${scons_opts[@]}" install-core || die
 
 	$(tc-getSTRIP) "--strip-unneeded" "${S}/build/install/bin/mongo"
 	$(tc-getSTRIP) "--strip-unneeded" "${S}/build/install/bin/mongod"

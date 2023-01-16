@@ -107,12 +107,6 @@ source = "github"
 github = "fcitx/fcitx5-hangul"
 use_latest_tag = true
 
-["app-i18n/fcitx-kkc"]
-source = "github"
-github = "fcitx/fcitx5-kkc"
-use_latest_tag = true
-github_account = "liuyujielol"
-
 # virtual package
 #["app-i18n/fcitx-meta"]
 
@@ -293,13 +287,6 @@ prefix = "v"
 
 # TODO
 #["app-text/xdvipdfmx"]
-
-["app-text/ydcv-rs"]
-source = "github"
-github = "farseerfc/ydcv-rs"
-use_latest_release = true
-prefix = "v"
-github_account = "bekcpear"
 
 ["app-vim/clang_complete"]
 source = "github"
@@ -525,6 +512,12 @@ prefix = "v"
 # TODO
 #["dev-util/jetbrains-toolbox"]
 
+["dev-util/marksman-bin"]
+source = "github"
+github = "artempyanykh/marksman"
+use_latest_release = true
+github_account = "st0nie"
+
 ["dev-util/pahole"]
 source = "git"
 git = "https://git.kernel.org/pub/scm/devel/pahole/pahole.git"
@@ -567,6 +560,13 @@ github = "justfont/open-huninn-font"
 use_latest_release = true
 prefix = "v"
 
+["media-fonts/lxgw-neo-xihei"]
+source = "github"
+github = "lxgw/LxgwNeoXiHei"
+use_latest_release = true
+prefix = "v"
+github_account = "Linerre"
+
 ["media-fonts/nerd-fonts"]
 source = "github"
 github = "ryanoasis/nerd-fonts"
@@ -586,6 +586,13 @@ github = "laishulu/Sarasa-Mono-SC-Nerd"
 use_latest_release = true
 prefix = "v"
 github_account = "oatiz"
+
+["media-fonts/smiley-sans"]
+source = "github"
+github = "atelier-anchor/smiley-sans"
+use_latest_release = true
+prefix = "v"
+github_account = "Linerre"
 
 ["media-fonts/tiejili"]
 source = "github"
@@ -694,6 +701,20 @@ github_account = "zozx"
 source = "regex"
 url = "https://v.qq.com/download.html#Linux"
 regex = "Tenvideo_universal_([\\d.]+)_amd64.deb"
+
+["media-video/go-musicfox"]
+source = "github"
+github = "anhoder/go-musicfox"
+use_latest_release = true
+prefix = "v"
+github_account = "st0nie"
+
+["media-video/mpv-handler"]
+source = "github"
+github = "akiirui/mpv-handler"
+use_latest_release = true
+prefix = "v"
+github_account = "st0nie"
 
 # TODO
 #["net-dialup/mentohust"]
@@ -898,6 +919,13 @@ source = "github"
 github = "openSUSE/zypper"
 use_latest_tag = true
 github_account = "HougeLangley"
+
+["sys-boot/ventoy-bin"]
+source = "github"
+github = "ventoy/Ventoy"
+use_latest_release = true
+prefix = "v"
+github_account = "st0nie"
 
 # upstream is no longer actively maintained, ignore it
 #["sys-devel/ucc"]
