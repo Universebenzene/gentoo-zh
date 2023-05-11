@@ -15,13 +15,18 @@ SLOT="0"
 RESTRICT="mirror strip network-sandbox"
 KEYWORDS=""
 
+IUSE="wayland"
+
 RDEPEND="
 	media-libs/alsa-lib
 	x11-libs/gtk+:3
 	x11-libs/libxcb
 	x11-libs/libXfixes
 	media-sound/pulseaudio
-	x11-misc/xdotool "
+	x11-misc/xdotool
+	media-libs/libva
+	wayland? ( media-video/pipewire[gstreamer] )
+"
 BDEPEND="
 	app-arch/libarchive[zstd]
 	app-misc/jq

@@ -36,7 +36,7 @@ github_account = "CHN-beta"
 # TODO
 #["app-dicts/fcitx5-pinyin-zhwiki"]
 
-["app-editors/AppFlowy-bin"]
+["app-editors/appflowy-bin"]
 source = "github"
 github = "AppFlowy-IO/AppFlowy"
 use_latest_release = true
@@ -171,17 +171,6 @@ github_account = "liangyongxiang"
 # TODO
 #["app-i18n/scim-chrasis"]
 
-["app-i18n/sogoupinyin"]
-source = "regex"
-url = "https://pinyin.sogou.com/linux"
-regex = "sogoupinyin_([\\d.]+)_amd64.deb"
-
-["app-i18n/wlpinyin"]
-source = "github"
-github = "xhebox/wlpinyin"
-use_latest_tag = true
-github_account = "lujianhua"
-
 ["app-i18n/zh-autoconvert"]
 source = "regex"
 url = "https://packages.debian.org/stable/source/zh-autoconvert"
@@ -275,6 +264,12 @@ github = "romkatv/powerlevel10k"
 use_latest_release = true
 prefix = "v"
 github_account = "OriPoin"
+
+["app-text/cajviewer"]
+source = "regex"
+url = "https://cajviewer.cnki.net/"
+regex = "net.cnki.cajviewer_([\\d.]+)_amd64.deb"
+github_account = "123485k"
 
 # TODO
 #["app-text/groff-utf8"]
@@ -488,6 +483,20 @@ github_account = "liangyongxiang"
 # add riscv keyword, drop after main tree keyworded
 #["dev-qt/qdbusviewer"]
 
+["dev-vcs/gitoxide"]
+source = "github"
+github = "Byron/gitoxide"
+use_max_tag = true
+prefix = "v"
+github_account = "peeweep"
+
+["dev-vcs/gptcommit"]
+source = "github"
+github = "zurawiki/gptcommit"
+use_max_tag = true
+prefix = "v"
+github_account = "peeweep"
+
 ["dev-util/arch-install-scripts"]
 source = "github"
 github = "archlinux/arch-install-scripts"
@@ -523,6 +532,13 @@ source = "git"
 git = "https://git.kernel.org/pub/scm/devel/pahole/pahole.git"
 prefix = "v"
 github_account = "HougeLangley"
+
+["dev-util/tauri-cli"]
+source = "github"
+github = "tauri-apps/tauri"
+use_latest_tag = true
+prefix = "cli.rs-v"
+github_account = "123485k"
 
 # TODO
 #["dev-util/v2ray-geoip-generator"]
@@ -573,6 +589,13 @@ github = "ryanoasis/nerd-fonts"
 use_latest_release = true
 prefix = "v"
 
+["media-fonts/Plangothic"]
+source = "github"
+github = "Fitzgerald-Porthmouth-Koenigsegg/Plangothic"
+use_latest_release = true
+prefix = "V"
+github_account = "st0nie"
+
 ["media-fonts/sarasa-gothic"]
 source = "github"
 github = "be5invis/sarasa-gothic"
@@ -580,9 +603,9 @@ use_latest_release = true
 prefix = "v"
 github_account = "zozx"
 
-["media-fonts/sarasa-mono-sc-nerd"]
+["media-fonts/sarasa-term-sc-nerd"]
 source = "github"
-github = "laishulu/Sarasa-Mono-SC-Nerd"
+github = "laishulu/Sarasa-Term-SC-Nerd"
 use_latest_release = true
 prefix = "v"
 github_account = "oatiz"
@@ -702,7 +725,7 @@ source = "regex"
 url = "https://v.qq.com/download.html#Linux"
 regex = "Tenvideo_universal_([\\d.]+)_amd64.deb"
 
-["media-video/go-musicfox"]
+["media-sound/go-musicfox"]
 source = "github"
 github = "anhoder/go-musicfox"
 use_latest_release = true
@@ -767,6 +790,20 @@ regex = "Package Details: wemeet-bin ([\\d.]+)-"
 # TODO
 #["net-libs/jzmq"]
 
+["net-misc/aliyunpan"]
+source = "github"
+github = "tickstep/aliyunpan"
+use_latest_release = true
+prefix = "v"
+github_account = "123485k"
+
+["net-misc/aliyundrive-webdav"]
+source = "github"
+github = "messense/aliyundrive-webdav"
+use_latest_release = true
+prefix = "v"
+github_account = "123485k"
+
 # TODO
 #["net-misc/avsocks"]
 
@@ -775,9 +812,24 @@ regex = "Package Details: wemeet-bin ([\\d.]+)-"
 
 ["net-misc/baidupcs-go"]
 source = "github"
-github = "felixonmars/BaiduPCS-Go"
+github = "qjfoidnh/BaiduPCS-Go"
 use_latest_release = true
 prefix = "v"
+github_account = "123485k"
+
+["net-misc/biliup-app"]
+source = "github"
+github = "ForgQi/biliup-app"
+use_latest_release = true
+prefix = "app-v"
+github_account = "123485k"
+
+["net-misc/biliup-rs"]
+source = "github"
+github = "ForgQi/biliup-rs"
+use_latest_release = true
+prefix = "v"
+github_account = "123485k"
 
 # TODO
 #["net-misc/networkmanager-l2tp"]
@@ -816,6 +868,7 @@ regex = "The current version of <strong>prips</strong> is <strong>([\\d.]+)</str
 source = "github"
 github = "ntop/n2n"
 use_latest_release = true
+github_account = "st0nie"
 
 ["net-p2p/qbittorrent-enhanced"]
 source = "github"
@@ -839,11 +892,25 @@ github = "Dreamacro/clash"
 use_latest_release = true
 prefix = "v"
 
+["net-proxy/clash-meta"]
+source = "github"
+github = "MetaCubeX/Clash.Meta"
+use_latest_release = true
+prefix = "v"
+github_account = "st0nie"
+
 ["net-proxy/clash-for-windows-bin"]
 source = "github"
 github = "Fndroid/clash_for_windows_pkg"
 use_latest_release = true
-github_account = "zozx"
+github_account = "irort"
+
+["net-proxy/dae"]
+source = "github"
+github = "daeuniverse/dae"
+use_latest_release = true
+prefix = "v"
+github_account = "st0nie"
 
 ["net-proxy/make-proxy"]
 source = "github"
@@ -887,6 +954,24 @@ source = "regex"
 url = "https://jp-minerals.org/vesta/en/download.html"
 regex = "ver. ([\\d.]+), built on"
 github_account = "CHN-beta"
+
+["sci-electronics/jlc-assistant-bin"]
+source = "regex"
+url = "https://www.jlc.com/portal/appDownloadsWithConfig.html"
+regex = "FJLCPcAssit-linux-x64-([\\d.]+).zip"
+github_account = "123485k"
+
+["sci-electronics/lceda"]
+source = "regex"
+url = "https://lceda.cn/page/download?src=index"
+regex = "lceda-linux-x64-([\\d.]+).zip"
+github_account = "123485k"
+
+["sci-electronics/lceda-pro"]
+source = "regex"
+url = "https://lceda.cn/page/download?src=index"
+regex = "lceda-pro-linux-x64-([\\d.]+).zip"
+github_account = "123485k"
 
 # TODO
 #["sci-libs/libticables2"]
@@ -1023,6 +1108,13 @@ github = "gitpod-io/openvscode-server"
 use_latest_release = true
 prefix = "openvscode-server-v"
 github_account = "liuyujielol"
+
+["www-apps/chatgpt-desktop"]
+source = "github"
+github = "lencx/ChatGPT"
+use_latest_release = true
+github_account = "oatiz"
+prefix = "v"
 
 ["www-servers/darkhttpd"]
 source = "github"

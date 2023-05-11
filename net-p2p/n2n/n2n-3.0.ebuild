@@ -15,7 +15,7 @@ KEYWORDS="amd64"
 RESTRICT="mirror"
 IUSE="
 	+openssl
-	cap
+	caps
 	pcap
 	zstd
 	upnp
@@ -24,7 +24,7 @@ DEPEND="
 	acct-user/n2n
 	acct-group/n2n
 	openssl? ( dev-libs/openssl )
-	cap? ( sys-libs/libcap )
+	caps? ( sys-libs/libcap )
 	pcap? ( net-libs/libpcap )
 	zstd? ( app-arch/zstd )
 	upnp? ( net-libs/miniupnpc net-libs/libnatpmp )
@@ -36,7 +36,7 @@ src_configure() {
 		-DBUILD_SHARED_LIBS=OFF
 		-DN2N_OPTION_USE_OPENSSL="$(usex openssl ON OFF)"
 		-DN2N_OPTION_USE_OPENSSL="$(usex openssl ON OFF)"
-		-DN2N_OPTION_USE_CAPLIB="$(usex cap ON OFF)"
+		-DN2N_OPTION_USE_CAPLIB="$(usex caps ON OFF)"
 		-DN2N_OPTION_USE_PCAPLIB="$(usex pcap ON OFF)"
 		-DN2N_OPTION_USE_ZSTD="$(usex zstd ON OFF)"
 		-DN2N_OPTION_USE_PORTMAPPING="$(usex upnp ON OFF)"
