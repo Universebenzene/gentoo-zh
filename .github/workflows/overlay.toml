@@ -761,6 +761,20 @@ source = "github"
 github = "shadowsocks/ChinaDNS"
 use_latest_release = true
 
+["net-dns/aliddns"]
+source = "github"
+github = "OpenIoTHub/aliddns"
+use_latest_tag = true
+prefix = "v"
+github_account = "peeweep"
+
+["net-dns/dnslookup"]
+source = "github"
+github = "ameshkov/dnslookup"
+use_latest_tag = true
+prefix = "v"
+github_account = "peeweep"
+
 ["net-dns/dog"]
 source = "github"
 github = "ogham/dog"
@@ -772,6 +786,13 @@ github_account = "peeweep"
 source = "git"
 git = "https://git.savannah.gnu.org/git/libidn.git"
 prefix = "v"
+
+["net-dns/q"]
+source = "github"
+github = "natesales/q"
+use_latest_tag = true
+prefix = "v"
+github_account = "peeweep"
 
 # TODO: need help
 #["net-dns/phddns"]
