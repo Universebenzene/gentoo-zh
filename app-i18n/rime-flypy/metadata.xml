@@ -5,11 +5,11 @@
     <name>ston</name>
     <email>ston.jia@qq.com</email>
   </maintainer>
-  <use>
-    <flag name="debug">Enable debugging (including logging of input of RIME input methods)</flag>
-    <flag name="tools">install grammar builder</flag>
-  </use>
   <upstream>
-    <remote-id type="github">lotem/librime-octagram</remote-id>
+    <remote-id type="github">cubercsl/rime-flypy</remote-id>
   </upstream>
+  <use>
+    <flag name="rime">install table for rime</flag>
+    <flag name="fcitx">install table for fcitx5</flag>
+  </use>
 </pkgmetadata>

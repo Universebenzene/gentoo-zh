@@ -6,10 +6,10 @@
     <email>ston.jia@qq.com</email>
   </maintainer>
   <use>
-    <flag name="debug">Enable debugging (including logging of input of RIME input methods)</flag>
-    <flag name="tools">install grammar builder</flag>
+    <flag name="server">install juicity-server</flag>
+    <flag name="client">install juicity-client</flag>
   </use>
   <upstream>
-    <remote-id type="github">lotem/librime-octagram</remote-id>
+    <remote-id type="github">juicity/juicity</remote-id>
   </upstream>
 </pkgmetadata>
