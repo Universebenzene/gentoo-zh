@@ -22,7 +22,6 @@ RESTRICT="mirror"
 DEPEND="
 	app-alternatives/v2ray-geoip
 	app-alternatives/v2ray-geosite
-	app-arch/p7zip
 "
 RDEPEND="$DEPEND"
 BDEPEND="sys-devel/clang"
@@ -62,6 +61,7 @@ src_compile() {
 src_install() {
 	dobin dae
 	systemd_dounit install/dae.service
+	newinitd "${FILESDIR}"/dae.initd dae
 	insinto /etc/dae
 	newins example.dae config.dae.example
 	newins install/empty.dae config.dae

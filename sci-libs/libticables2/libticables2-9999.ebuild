@@ -27,11 +27,13 @@ DEPEND="${RDEPEND}
 	virtual/pkgconfig
 	nls? ( sys-devel/gettext )"
 
+S="${S}/${MY_PN}/trunk"
+
 DOCS=( AUTHORS LOGO NEWS README ChangeLog docs/api.txt )
 
 src_prepare() {
-	S="${S}/${MY_PN}/trunk/"
 	cd "${S}"
+	eapply_user
 	eautoreconf
 }
 
@@ -47,8 +49,8 @@ src_configure() {
 }
 
 src_install() {
+	use doc && local HTML_DOCS="${S}/docs/html/*"
 	default
-	use doc && dohtml docs/html/*
 }
 
 pkg_postinst() {
