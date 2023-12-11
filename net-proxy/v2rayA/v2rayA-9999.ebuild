@@ -13,13 +13,10 @@ EGIT_BRANCH="main" # HEAD
 
 LICENSE="AGPL-3"
 SLOT="0"
-KEYWORDS=""
 IUSE="xray"
 RESTRICT="mirror"
 
-DEPEND=""
 RDEPEND="
-	${DEPEND}
 	|| (
 		>=net-proxy/v2ray-5
 		>=net-proxy/v2ray-bin-5
@@ -54,9 +51,9 @@ src_compile() {
 	fi
 	OUTPUT_DIR="${S}/service/server/router/web" yarn build || die "yarn build failed"
 
-	for file in $(find "${S}/service/server/router/web" |grep -v png |grep -v index.html|grep -v .gz)
-	do
-		if [ ! -d $file ]; then
+	for file in $(find "${S}/service/server/router/web" |grep -v png |grep -v index.html|grep -v .gz); do
+		if [ ! -d $file ];then
+			einfo "compress $file"
 			gzip -9 $file
 		fi
 	done

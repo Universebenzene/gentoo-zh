@@ -24,17 +24,15 @@ SRC_URI="${APPSTORE_URI}/d/${PN}/${PN}_${PV}-${PR/r/}_amd64.deb
 LICENSE="LGPL-2.1"
 SLOT="0"
 KEYWORDS="~amd64"
-IUSE=""
 RESTRICT="strip"
 
-DEPEND=""
-RDEPEND="${DEPEND}
+RDEPEND="
 	>=media-libs/alsa-lib-1.0.16[abi_x86_32(-)]
 	>=media-libs/libgphoto2-2.5.10[abi_x86_32(-)]
 	media-libs/gst-plugins-base[abi_x86_32(-)]
 	media-libs/lcms:2[abi_x86_32(-)]
 	>=net-nds/openldap-2.4.7[abi_x86_32(-)]
-	>=media-sound/mpg123-1.13.7[abi_x86_32(-)]
+	>=media-libs/libmpg123-1.13.7[abi_x86_32(-)]
 	>=media-libs/openal-1.14[abi_x86_32(-)]
 	>=net-libs/libpcap-0.9.8[abi_x86_32(-)]
 	media-libs/libcanberra[pulseaudio,abi_x86_32(-)]

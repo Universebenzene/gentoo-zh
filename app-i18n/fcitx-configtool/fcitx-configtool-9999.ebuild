@@ -1,20 +1,10 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
-inherit cmake
-
-if [[ "${PV}" == 9999 ]]; then
-	inherit git-r3
-	EGIT_REPO_URI="https://github.com/fcitx/fcitx5-configtool.git"
-else
-	MY_PN="fcitx5-configtool"
-	S="${WORKDIR}/${MY_PN}-${PV}"
-	SRC_URI="https://github.com/fcitx/fcitx5-configtool/archive/refs/tags/${PV}.tar.gz -> ${P}.tar.gz"
-	KEYWORDS="~amd64 ~x86"
-fi
-
+inherit cmake git-r3
+EGIT_REPO_URI="https://github.com/fcitx/fcitx5-configtool.git"
 DESCRIPTION="Configuration module for Fcitx"
 HOMEPAGE="https://fcitx-im.org/ https://github.com/fcitx/fcitx5-configtool"
 
@@ -23,9 +13,11 @@ SLOT="5"
 IUSE="kcm +config-qt test"
 RESTRICT="!test? ( test )"
 
-RDEPEND="app-i18n/fcitx:5
-	app-i18n/fcitx-qt:5[qt5,-onlyplugin]
+RDEPEND="
+	>=app-i18n/fcitx-5.1.5:5
+	>=app-i18n/fcitx-qt-5.1.3:5[qt5,-onlyplugin]
 	dev-qt/qtcore:5
+	dev-qt/qtconcurrent:5
 	dev-qt/qtdbus:5
 	dev-qt/qtgui:5
 	dev-qt/qtwidgets:5
@@ -33,13 +25,15 @@ RDEPEND="app-i18n/fcitx:5
 	kde-frameworks/kwidgetsaddons:5
 	virtual/libintl
 	x11-libs/libX11
+	x11-libs/libxkbcommon
 	x11-libs/libxkbfile
 	kcm? (
-		kde-frameworks/kconfigwidgets:5
-		kde-frameworks/kcoreaddons:5
+		dev-qt/qtquickcontrols2:5
+		kde-frameworks/kdeclarative:5
 		kde-frameworks/ki18n:5
 		kde-frameworks/kirigami:5
-		kde-frameworks/kdeclarative:5
+		kde-frameworks/kpackage:5
+		kde-plasma/libplasma:5
 	)
 	config-qt? (
 		kde-frameworks/kitemviews:5
@@ -47,7 +41,7 @@ RDEPEND="app-i18n/fcitx:5
 "
 
 DEPEND="${RDEPEND}
-	kde-frameworks/extra-cmake-modules:5
+	kde-frameworks/extra-cmake-modules:0
 	sys-devel/gettext
 	virtual/pkgconfig"
 
@@ -57,6 +51,7 @@ src_configure() {
 		-DENABLE_KCM=$(usex kcm)
 		-DENABLE_CONFIG_QT=$(usex config-qt)
 		-DENABLE_TEST=$(usex test)
+		-DUSE_QT6=Off
 	)
 
 	cmake_src_configure

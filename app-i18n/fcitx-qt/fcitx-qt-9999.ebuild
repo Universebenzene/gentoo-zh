@@ -1,31 +1,25 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
 
-inherit cmake
+inherit cmake git-r3
 
-if [[ "${PV}" == 9999 ]]; then
-	inherit git-r3
-	EGIT_REPO_URI="https://github.com/fcitx/fcitx5-qt.git"
-else
-	MY_PN="fcitx5-qt"
-	S="${WORKDIR}/${MY_PN}-${PV}"
-	SRC_URI="https://github.com/fcitx/fcitx5-qt/archive/refs/tags/${PV}.tar.gz -> ${P}.tar.gz"
-	KEYWORDS="~amd64 ~x86"
-fi
-
+EGIT_REPO_URI="https://github.com/fcitx/fcitx5-qt.git"
 DESCRIPTION="Qt library and IM module for fcitx5"
 HOMEPAGE="https://github.com/fcitx/fcitx5-qt"
 
-LICENSE="BSD-1 GPL-2+ LGPL-2+ MIT"
+LICENSE="BSD LGPL-2.1+"
 SLOT="5"
-IUSE="+qt5 onlyplugin qt6"
-REQUIRED_USE="|| ( qt5 qt6 )"
+IUSE="+qt5 onlyplugin staticplugin qt6 wayland"
+REQUIRED_USE="
+	|| ( qt5 qt6 )
+	staticplugin? ( onlyplugin )
+"
 
 RDEPEND="
 	!onlyplugin? (
-		>=app-i18n/fcitx-5.0.16:5
+		>=app-i18n/fcitx-5.1.5:5
 	)
 	qt5? (
 		dev-qt/qtcore:5
@@ -34,17 +28,18 @@ RDEPEND="
 		dev-qt/qtwidgets:5
 		dev-qt/qtconcurrent:5
 	)
+	qt6? (
+		dev-qt/qtbase:6[dbus,gui,wayland?,widgets]
+	)
 	x11-libs/libX11
 	x11-libs/libxcb
 	x11-libs/libxkbcommon
-
-	qt6? (
-		dev-qt/qtbase:6[dbus,gui]
-	)
-	kde-frameworks/extra-cmake-modules:5
 "
-DEPEND="${RDEPEND}
-	virtual/pkgconfig"
+DEPEND="${RDEPEND}"
+BDEPEND="
+	kde-frameworks/extra-cmake-modules:0
+	virtual/pkgconfig
+"
 
 src_configure() {
 	local mycmakeargs=(
@@ -54,7 +49,9 @@ src_configure() {
 		-DENABLE_QT4=no
 		-DENABLE_QT5=$(usex qt5)
 		-DENABLE_QT6=$(usex qt6)
+		-DENABLE_QT6_WAYLAND_WORKAROUND=$(usex wayland)
 		-DBUILD_ONLY_PLUGIN=$(usex onlyplugin)
+		-DBUILD_STATIC_PLUGIN=$(usex staticplugin)
 	)
 	cmake_src_configure
 }

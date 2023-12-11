@@ -50,7 +50,7 @@ COMMON_DEPEND="
 "
 DEPEND="${COMMON_DEPEND}
 	test? (
-		qt6? ( >=dev-qt/qtbase-${QT6MIN}:5[test] )
+		qt6? ( >=dev-qt/qtbase-${QT6MIN}:6[test] )
 		!qt6? ( >=dev-qt/qttest-${QT5MIN}:5 )
 
 	)
@@ -63,7 +63,7 @@ BDEPEND="
 	dev-python/docutils
 	qt6? ( >=dev-qt/qtbase-${QT6MIN}:6[nls] )
 	!qt6? ( >=dev-qt/linguist-tools-${QT5MIN}:5 )
-	kde-frameworks/extra-cmake-modules:5
+	kde-frameworks/extra-cmake-modules:0
 	virtual/pkgconfig
 "
 
