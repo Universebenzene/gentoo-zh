@@ -1,6 +1,6 @@
 - Reponame: **`gentoo-zh`**
 
-(The last generation time: 2023-12-11 23:56:48 CST)
+(The last generation time: 2023-12-25 16:45:35 CST)
 
 ### Packages
 
@@ -13,6 +13,7 @@
    sys-kernel/zenpower3                     | 0.2.0                                     |  D, RD | https://git.exozy.me/a/zenpower3                                                        | Linux kernel driver for reading sensors of AMD Zen family CPUs
 --------------------------------------------|-------------------------------------------|--------|-----------------------------------------------------------------------------------------|--------------------
  app-arch/zchunk                            | 1.3.2                                     |        | https://github.com/zchunk/zchunk                                                        | A format designed for highly efficient deltas while maintaining good compression
+                                            | 1.4.0                                     |        |                                                                                         |
                                             | 9999                                      |        |                                                                                         |
 --------------------------------------------|-------------------------------------------|--------|-----------------------------------------------------------------------------------------|--------------------
  app-backup/btrfs-assistant                 | 1.8                                       |        | https://gitlab.com/btrfs-assistant/btrfs-assistant                                      | A GUI management tool to make managing a Btrfs filesystem easier.
@@ -52,12 +53,9 @@
                                             | 9999                                      |        |                                                                                         |
      app-i18n/fcitx-lua                     | 5.0.11                                    |  D, RD | https://github.com/fcitx/fcitx5-lua                                                     | Lua support for fcitx
                                             | 9999                                      |        |                                                                                         |
-     app-i18n/fcitx-qt                      | 5.1.3-r1                                  |  D, RD | https://github.com/fcitx/fcitx5-qt                                                      | Qt library and IM module for fcitx5
-                                            | 9999                                      |        |                                                                                         |
-   app-i18n/fcitx-configtool                | 5.1.2                                     | RD     | https://fcitx-im.org/                                                                   | Configuration module for Fcitx
-                                            | 9999                                      |        |                                                                                         |
-   app-i18n/fcitx-gtk                       | 5.1.0                                     | RD     | https://github.com/fcitx/fcitx5-gtk                                                     | Gtk im module for fcitx5 and glib based dbus client library
-                                            | 9999                                      |        |                                                                                         |
+     app-i18n/fcitx-qt                      | 9999                                      |  D, RD | https://github.com/fcitx/fcitx5-qt                                                      | Qt library and IM module for fcitx5
+   app-i18n/fcitx-configtool                | 9999                                      | RD     | https://fcitx-im.org/                                                                   | Configuration module for Fcitx
+   app-i18n/fcitx-gtk                       | 9999                                      | RD     | https://github.com/fcitx/fcitx5-gtk                                                     | Gtk im module for fcitx5 and glib based dbus client library
    app-i18n/fcitx-hangul                    | 5.1.1                                     | RD     | https://fcitx-im.org/                                                                   | Korean Hangul input method for Fcitx
                                             | 9999                                      |        |                                                                                         |
    app-i18n/fcitx-m17n                      | 5.1.0                                     | RD     | https://github.com/fcitx/fcitx5-m17n                                                    | m17n-provided input methods for Fcitx5
@@ -80,14 +78,10 @@
 --------------------------------------------|-------------------------------------------|--------|-----------------------------------------------------------------------------------------|--------------------
  app-i18n/man-pages-zh_CN                   | 9999                                      |        | https://github.com/man-pages-zh/manpages-zh                                             | A somewhat comprehensive collection of Chinese Linux man pages
 --------------------------------------------|-------------------------------------------|--------|-----------------------------------------------------------------------------------------|--------------------
- app-i18n/mozc                              | 2.26.4220_p20201212102434_p20201219202429 |        | https://github.com/google/mozc                                                          | Mozc - Japanese input method editor
-                                            | 2.26.4632_p20220213064411_p20220214004422 |        |                                                                                         |
+ app-i18n/mozc                              | 2.26.4632_p20220213064411_p20220214004422 |        | https://github.com/google/mozc                                                          | Mozc - Japanese input method editor
                                             | 2.28.5029.102                             |        |                                                                                         |
                                             | 2.28.5029.102-r1                          |        |                                                                                         |
-   app-i18n/fcitx                           | 4.2.9.8                                   |  D, RD | https://fcitx-im.org/                                                                   | Fcitx (Flexible Context-aware Input Tool with eXtension) input method framework
-                                            | 5.1.5                                     |        |                                                                                         |
-                                            | 9999                                      |        |                                                                                         |
-     x11-libs/xcb-imdkit                    | 1.0.5                                     |  D, RD | https://github.com/fcitx/xcb-imdkit                                                     | Input method development support for xcb
+   app-i18n/fcitx                           | 9999                                      |  D, RD | https://fcitx-im.org/                                                                   | Fcitx5 Next generation of fcitx
    app-i18n/libime                          | 1.1.3                                     |  D, RD | https://fcitx-im.org/                                                                   | Fcitx5 Next generation of fcitx
                                             | 9999                                      |        |                                                                                         |
    dev-util/gyp                             | 20230914150222                            | BD     | https://gyp.gsrc.io/                                                                    | GYP (Generate Your Projects) meta-build system
@@ -140,11 +134,7 @@
 --------------------------------------------|-------------------------------------------|--------|-----------------------------------------------------------------------------------------|--------------------
  app-misc/yq-bin                            | 4.30.6                                    |        | https://github.com/mikefarah/yq                                                         | yq is a portable command-line YAML, JSON and XML processor
                                             | 4.35.2                                    |        |                                                                                         |
-                                            | 4.40.4                                    |        |                                                                                         |
---------------------------------------------|-------------------------------------------|--------|-----------------------------------------------------------------------------------------|--------------------
- app-mobilephone/scrcpy                     | 1.25                                      |        | https://blog.rom1v.com/2018/03/introducing-scrcpy/                                      | Display and control your Android device
-                                            | 2.1.1                                     |        |                                                                                         |
-                                            | 2.3                                       |        |                                                                                         |
+                                            | 4.40.5                                    |        |                                                                                         |
 --------------------------------------------|-------------------------------------------|--------|-----------------------------------------------------------------------------------------|--------------------
  app-office/anytype-bin                     | 0.35.4                                    |        | https://anytype.io                                                                      | A notebook based on p2p network
 --------------------------------------------|-------------------------------------------|--------|-----------------------------------------------------------------------------------------|--------------------
@@ -221,7 +211,8 @@
 --------------------------------------------|-------------------------------------------|--------|-----------------------------------------------------------------------------------------|--------------------
  dev-python/daff                            | 1.3.46                                    |        | https://github.com/paulfitz/daff                                                        | The daff can produce and apply tabular diffs
 --------------------------------------------|-------------------------------------------|--------|-----------------------------------------------------------------------------------------|--------------------
- dev-python/nvchecker                       | 2.12                                      |        | https://pypi.org/project/nvchecker/                                                     | nvchecker is for checking if a new version of some software has been released
+ dev-python/nvchecker                       | 2.13                                      |        | https://pypi.org/project/nvchecker/                                                     | nvchecker is for checking if a new version of some software has been released
+                                            | 2.13.1                                    |        |                                                                                         |
    dev-python/structlog                     | 23.2.0                                    | RD     | http://www.structlog.org/en/stable/                                                     | Structured Logging for Python
 --------------------------------------------|-------------------------------------------|--------|-----------------------------------------------------------------------------------------|--------------------
  dev-python/pytube                          | 15.0.0                                    |        | https://github.com/pytube/pytube                                                        | Python tools for downloading YouTube Videos
@@ -231,6 +222,7 @@
      sys-apps/pacman                        | 6.0.2                                     |  D     | https://archlinux.org/pacman/                                                           | Archlinux's binary package manager
        app-crypt/archlinux-keyring          | 20231017                                  |  D, RD | https://gitlab.archlinux.org/archlinux/archlinux-keyring                                | GnuPG keyring of Archlinux developer keys
                                             | 20231113                                  |        |                                                                                         |
+                                            | 20231222                                  |        |                                                                                         |
 --------------------------------------------|-------------------------------------------|--------|-----------------------------------------------------------------------------------------|--------------------
  dev-util/bom-utils                         | 1.0                                       |        | https://github.com/jlblancoc/utf-bom-utils                                              | Small programs to add or remove the BOM mark in UTF8 files
 --------------------------------------------|-------------------------------------------|--------|-----------------------------------------------------------------------------------------|--------------------
@@ -328,9 +320,6 @@
 --------------------------------------------|-------------------------------------------|--------|-----------------------------------------------------------------------------------------|--------------------
  media-libs/libspiro                        | 0.3.20150131                              |        | https://github.com/fontforge/libspiro                                                   | Spiro is the creation of Raph Levien. It simplifies the drawing of beautiful curves.
 --------------------------------------------|-------------------------------------------|--------|-----------------------------------------------------------------------------------------|--------------------
- media-libs/libva-nvidia-driver             | 0.0.9                                     |        | https://github.com/elFarto/nvidia-vaapi-driver                                          | NVDEC Backend for Video Acceleration (VA) API
-                                            | 9999                                      |        |                                                                                         |
---------------------------------------------|-------------------------------------------|--------|-----------------------------------------------------------------------------------------|--------------------
  media-plugins/gimp-gap                     | 2.8.0                                     |        | http://www.gimp.org/                                                                    | Gimp Animation Package
 --------------------------------------------|-------------------------------------------|--------|-----------------------------------------------------------------------------------------|--------------------
  media-plugins/osdlyrics                    | 0.5.11                                    |        | https://github.com/osdlyrics/osdlyrics                                                  | Standalone lyrics fetcher/displayer (windowed and OSD mode).
@@ -360,7 +349,7 @@
 --------------------------------------------|-------------------------------------------|--------|-----------------------------------------------------------------------------------------|--------------------
  media-sound/netease-cloud-music            | 1.2.1                                     |        | https://music.163.com                                                                   | Netease Cloud Music, converted from .deb package
 --------------------------------------------|-------------------------------------------|--------|-----------------------------------------------------------------------------------------|--------------------
- media-sound/netease-cloud-music-gtk        | 2.2.0_p20231016                           |        | https://github.com/gmg137/netease-cloud-music-gtk                                       | netease cloud music player based on Rust & GTK for Linux
+ media-sound/netease-cloud-music-gtk        | 2.3.0                                     |        | https://github.com/gmg137/netease-cloud-music-gtk                                       | netease cloud music player based on Rust & GTK for Linux
 --------------------------------------------|-------------------------------------------|--------|-----------------------------------------------------------------------------------------|--------------------
  media-sound/qqmusic                        | 1.1.5                                     |        | https://y.qq.com/                                                                       | Tencent QQ Music, converted from .deb package
 --------------------------------------------|-------------------------------------------|--------|-----------------------------------------------------------------------------------------|--------------------
@@ -383,7 +372,7 @@
 --------------------------------------------|-------------------------------------------|--------|-----------------------------------------------------------------------------------------|--------------------
  net-analyzer/besttrace-bin                 | 1.3.2-r1                                  |        | https://www.ipip.net                                                                    | 附带链路可视化的 traceroute 工具
 --------------------------------------------|-------------------------------------------|--------|-----------------------------------------------------------------------------------------|--------------------
- net-analyzer/nali                          | 0.8.0                                     |        | https://github.com/zu1k/nali                                                            | An offline tool for querying IP geographic information and CDN provider.
+ net-analyzer/nali                          | 0.8.1                                     |        | https://github.com/zu1k/nali                                                            | An offline tool for querying IP geographic information and CDN provider.
 --------------------------------------------|-------------------------------------------|--------|-----------------------------------------------------------------------------------------|--------------------
  net-analyzer/realitlscanner                | 0.1.2                                     |        | https://github.com/XTLS/RealiTLScanner                                                  | A TLS server scanner for Reality
 --------------------------------------------|-------------------------------------------|--------|-----------------------------------------------------------------------------------------|--------------------
@@ -404,7 +393,7 @@
 --------------------------------------------|-------------------------------------------|--------|-----------------------------------------------------------------------------------------|--------------------
  net-dns/phddns                             | 2.0.6.32828                               |        | http://hsk.oray.com/                                                                    | Phddns
 --------------------------------------------|-------------------------------------------|--------|-----------------------------------------------------------------------------------------|--------------------
- net-dns/q                                  | 0.15.1                                    |        | https://github.com/natesales/q                                                          | A tiny command line DNS client with support for UDP, TCP, DoT, DoH, DoQ and ODoH
+ net-dns/q                                  | 0.19.1                                    |        | https://github.com/natesales/q                                                          | A tiny command line DNS client with support for UDP, TCP, DoT, DoH, DoQ and ODoH
 --------------------------------------------|-------------------------------------------|--------|-----------------------------------------------------------------------------------------|--------------------
  net-im/deepin-wine-qq                      | 9.5.2.27897                               |        | https://aur.archlinux.org/packages/deepin-wine-qq                                       | Tencent QQ on Deepin Wine(com.qq.im.deepin) For Gentoo
    app-emulation/deepin-wine5               | 5.0.16-r1                                 |  D, RD | https://www.deepin.org                                                                  | Deepin wine5
@@ -426,7 +415,7 @@
                                             | 0.1.29                                    |        |                                                                                         |
      dev-libs/libdatrie                     | 0.2.13                                    |  D, RD | https://github.com/tlwg/libdatrie                                                       | Double-Array Trie Library
 --------------------------------------------|-------------------------------------------|--------|-----------------------------------------------------------------------------------------|--------------------
- net-im/tencent-qq                          | 3.2.3_p19189                              |        | https://im.qq.com/linuxqq/index.shtml                                                   | The new version of the official linux-qq
+ net-im/tencent-qq                          | 3.2.3_p19689                              |        | https://im.qq.com/linuxqq/index.shtml                                                   | The new version of the official linux-qq
    media-libs/openslide                     | 20230904                                  | RD     | http://openslide.org/                                                                   | C library with simple interface to read virtual slides
    x11-misc/flatpak-xdg-utils               | 1.0.5                                     | RD     | https://github.com/flatpak/flatpak-xdg-utils                                            | Utilities for containerized apps to launch programs outside the container
    x11-misc/snapd-xdg-open                  | 20170401                                  | RD     | https://github.com/snapcore/snapd-xdg-open                                              | Software for opening links from snaps in desktop
@@ -521,16 +510,16 @@
 --------------------------------------------|-------------------------------------------|--------|-----------------------------------------------------------------------------------------|--------------------
  net-proxy/smartproxy                       | 0.9.5                                     |        | https://github.com/microcai/smartproxy                                                  | A fast, proxy smart selector
 --------------------------------------------|-------------------------------------------|--------|-----------------------------------------------------------------------------------------|--------------------
- net-proxy/v2rayA                           | 2.2.4.1                                   |        | https://v2raya.org/                                                                     | web GUI of Project V which supports V2Ray, Xray, SS, SSR, Trojan and Pingtunnel
-                                            | 2.2.4.3                                   |        |                                                                                         |
+ net-proxy/v2rayA                           | 2.2.4.3                                   |        | https://v2raya.org/                                                                     | web GUI of Project V which supports V2Ray, Xray, SS, SSR, Trojan and Pingtunnel
+                                            | 2.2.4.6                                   |        |                                                                                         |
                                             | 9999                                      |        |                                                                                         |
    net-proxy/Xray                           | 1.8.4-r1                                  | RD     | https://xtls.github.io/                                                                 | Xray, Penetrates Everything. Also the best v2ray-core, with XTLS support.
                                             | 1.8.6                                     |        |                                                                                         |
      app-alternatives/v2ray-geoip           | 0                                         |  D, RD |                                                                                         | symlink for v2ray-geoip
      app-alternatives/v2ray-geosite         | 0                                         |  D, RD |                                                                                         | symlink for v2ray-geosite
-   net-proxy/v2ray                          | 5.10.1                                    | RD     | https://www.v2fly.org/                                                                  | A platform for building proxies to bypass network restrictions.
-                                            | 5.11.0                                    |        |                                                                                         |
+   net-proxy/v2ray                          | 5.11.0                                    | RD     | https://www.v2fly.org/                                                                  | A platform for building proxies to bypass network restrictions.
                                             | 5.12.1                                    |        |                                                                                         |
+                                            | 5.13.0                                    |        |                                                                                         |
    net-proxy/v2ray-bin                      | 4.45.0-r1                                 | RD     | https://www.v2fly.org                                                                   | A platform for building proxies to bypass network restrictions.
                                             | 5.12.1                                    |        |                                                                                         |
 --------------------------------------------|-------------------------------------------|--------|-----------------------------------------------------------------------------------------|--------------------
@@ -601,14 +590,14 @@
 --------------------------------------------|-------------------------------------------|--------|-----------------------------------------------------------------------------------------|--------------------
  virtual/linux-sources                      | 3-r11                                     |        |                                                                                         | Virtual for Linux kernel sources
    sys-kernel/liquorix-sources              | 6.4.12                                    | RD     | https://liquorix.net/                                                                   | Liquorix kernel is best one for desktop, multimedia and gaming workloads
-                                            | 6.4.6                                     |        |                                                                                         |
+                                            | 6.6.8                                     |        |                                                                                         |
    sys-kernel/xanmod-kernel                 | 6.6.1                                     | RD     | https://www.kernel.org/                                                                 | XanMod lts kernel built with Gentoo patches and cjktty
    sys-kernel/xanmod-rt                     | 6.0.11                                    | RD     | https://xanmod.org                                                                      | XanMod RT sources and CJKTTY options.
    sys-kernel/xanmod-sources                | 6.6.1                                     | RD     | https://xanmod.org                                                                      | Full XanMod source, including the Gentoo patchset and other patch options.
 --------------------------------------------|-------------------------------------------|--------|-----------------------------------------------------------------------------------------|--------------------
  www-apps/chatgpt-desktop                   | 1.1.0                                     |        | https://nofwl.com                                                                       | ChatGPT Desktop Application
 --------------------------------------------|-------------------------------------------|--------|-----------------------------------------------------------------------------------------|--------------------
- www-client/brave                           | 1.61.101                                  |        | https://brave.com/                                                                      | Web browser that blocks ads and trackers by default
+ www-client/brave                           | 1.61.109                                  |        | https://brave.com/                                                                      | Web browser that blocks ads and trackers by default
 --------------------------------------------|-------------------------------------------|--------|-----------------------------------------------------------------------------------------|--------------------
  www-servers/darkhttpd                      | 1.14                                      |        | http://unix4lyfe.org/darkhttpd/                                                         | A small, static webserver
 --------------------------------------------|-------------------------------------------|--------|-----------------------------------------------------------------------------------------|--------------------
