@@ -24,14 +24,13 @@ LICENSE="MIT"
 SLOT="0"
 KEYWORDS="-* ~amd64 ~arm ~arm64 ~x86"
 
-RESRICT="mirror"
+RESTRICT="mirror"
 
-DEPEND="
+RDEPEND="
 	!net-proxy/v2ray
 	!app-alternatives/v2ray-geoip
 	!app-alternatives/v2ray-geosite
 "
-RDEPEND="${DEPEND}"
 BDEPEND="app-arch/unzip"
 QA_PREBUILT="
 	/usr/bin/v2ray

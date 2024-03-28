@@ -21,7 +21,7 @@ HOMEPAGE="https://github.com/sddm/sddm"
 
 LICENSE="GPL-2+ MIT CC-BY-3.0 CC-BY-SA-3.0 public-domain"
 SLOT="0"
-IUSE="+elogind +pam systemd test +X qt6"
+IUSE="elogind +systemd test +X qt6"
 
 REQUIRED_USE="?? ( elogind systemd )"
 RESTRICT="!test? ( test )"
@@ -30,8 +30,9 @@ COMMON_DEPEND="
 	acct-group/sddm
 	acct-user/sddm
 	qt6? (
-		>=dev-qt/qtbase-${QT6MIN}:6[dbus,network,gui,wayland,xml]
+		>=dev-qt/qtbase-${QT6MIN}:6[dbus,network,gui,wayland,xml,libinput]
 		>=dev-qt/qtdeclarative-${QT6MIN}:6
+		>=dev-qt/qtwayland-${QT6MIN}:6
 	)
 	!qt6? (
 		>=dev-qt/qtcore-${QT5MIN}:5
@@ -42,9 +43,8 @@ COMMON_DEPEND="
 	)
 	x11-libs/libXau
 	x11-libs/libxcb:=
+	sys-libs/pam
 	elogind? ( sys-auth/elogind )
-	pam? ( sys-libs/pam )
-	!pam? ( virtual/libcrypt:= )
 	systemd? ( sys-apps/systemd:= )
 	!systemd? ( sys-power/upower )
 "
@@ -71,9 +71,6 @@ PATCHES=(
 	# Downstream patches
 	"${FILESDIR}/${PN}-0.20.0-respect-user-flags.patch"
 	"${FILESDIR}/${PN}-0.19.0-Xsession.patch" # bug 611210
-	"${FILESDIR}/${PN}-0.20.0-sddm.pam-use-substack.patch" # bug 728550
-	"${FILESDIR}/${PN}-0.20.0-disable-etc-debian-check.patch"
-	"${FILESDIR}/${PN}-0.20.0-no-default-pam_systemd-module.patch" # bug 669980
 )
 
 pkg_setup() {
@@ -104,7 +101,6 @@ src_configure() {
 		-DDBUS_CONFIG_FILENAME="org.freedesktop.sddm.conf"
 		-DRUNTIME_DIR=/run/sddm
 		-DSYSTEMD_TMPFILES_DIR="/usr/lib/tmpfiles.d"
-		-DENABLE_PAM=$(usex pam)
 		-DNO_SYSTEMD=$(usex !systemd)
 		-DUSE_ELOGIND=$(usex elogind)
 		-DBUILD_WITH_QT6=$(usex qt6)

@@ -33,12 +33,24 @@ github_account = "HougeLangley"
 
 #["app-containers/distrobox-boost"]
 
+["app-backup/restic-rest-server"]
+source = "github"
+github = "restic/rest-server"
+use_latest_release = true
+prefix = "v"
+github_account = "liangyongxiang"
+
 ["app-crypt/archlinux-keyring"]
 source = "git"
 git = "https://gitlab.archlinux.org/archlinux/archlinux-keyring.git"
 github_account = "HougeLangley"
 
-#["app-crypt/cfssl"]
+["app-crypt/cfssl"]
+source = "github"
+github = "cloudflare/cfssl"
+use_latest_release = true
+prefix = "v"
+github_account = "peeweep"
 
 #["app-crypt/etoken-sac"]
 
@@ -103,18 +115,11 @@ github_account = "liangyongxiang"
 
 #["app-i18n/fcitx-gtk"]
 
-["app-i18n/fcitx-hangul"]
-source = "github"
-github = "fcitx/fcitx5-hangul"
-use_latest_tag = true
+#["app-i18n/fcitx-hangul"]
 
 #["app-i18n/fcitx-lua"]
 
-["app-i18n/fcitx-m17n"]
-source = "github"
-github = "fcitx/fcitx5-m17n"
-use_latest_tag = true
-github_account = "liuyujielol"
+#["app-i18n/fcitx-m17n"]
 
 # virtual package
 #["app-i18n/fcitx-meta"]
@@ -236,12 +241,12 @@ prefix = "v"
 
 #["app-misc/xmind"]
 
-["app-misc/yq-bin"]
+["app-misc/go-yq-bin"]
 source = "github"
 github = "mikefarah/yq"
 use_latest_release = true
 prefix = "v"
-github_account = "oatiz"
+github_account = "gouwazi"
 
 ["app-office/anytype-bin"]
 source = "github"
@@ -674,6 +679,13 @@ source = "github"
 github = "osdlyrics/osdlyrics"
 use_latest_release = true
 
+["media-plugins/waylyrics"]
+source = "github"
+github = "waylyrics/waylyrics"
+prefix = "v"
+use_latest_release = true
+github_account = "liuyujielol"
+
 #["media-sound/barva"]
 
 ["media-sound/feeluown"]
@@ -758,6 +770,13 @@ source = "github"
 github = "shadowsocks/ChinaDNS"
 use_latest_release = true
 
+["net-dns/ddns-go"]
+source = "github"
+github = "jeessy2/ddns-go"
+use_latest_tag = true
+prefix = "v"
+github_account = "Puqns67"
+
 ["net-dns/dnslookup"]
 source = "github"
 github = "ameshkov/dnslookup"
@@ -818,6 +837,13 @@ github = "messense/aliyundrive-webdav"
 use_latest_release = true
 prefix = "v"
 github_account = "123485k"
+
+["net-misc/alist"]
+source = "github"
+github = "alist-org/alist"
+use_latest_release = true
+prefix = "v"
+github_account = "liangyongxiang"
 
 ["net-misc/aliyunpan"]
 source = "github"
@@ -1137,7 +1163,7 @@ use_latest_release = true
 github_account = "oatiz"
 prefix = "v"
 
-["www-client/brave"]
+["www-client/brave-bin"]
 source = "github"
 github = "brave/brave-browser"
 use_latest_release = true
