@@ -22,12 +22,13 @@ KEYWORDS="-* ~amd64"
 IUSE="wayland +X"
 REQUIRED_USE="|| ( wayland X )"
 
-RESTRICT="mirror"
-
 RDEPEND="
 	sys-apps/dbus
 	>=media-libs/fontconfig-2.12
-	>=dev-libs/openssl-1.1
+	|| (
+			dev-libs/openssl-compat:1.1.1
+			dev-libs/openssl:0/1.1
+	)
 	wayland? (
 		dev-libs/wayland
 		dev-libs/wayland-protocols

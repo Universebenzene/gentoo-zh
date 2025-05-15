@@ -2,6 +2,8 @@ name: nvchecker
 
 on:
   push:
+    branches:
+      - master
   workflow_dispatch:
   schedule:
     # * is a special character in YAML so you have to quote this string
@@ -14,13 +16,15 @@ concurrency:
 
 jobs:
   nvchecker:
+    if: github.repository == 'microcai/gentoo-zh'
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/liangyongxiang/gentoo-testing:master
-
+    outputs:
+      nvcmp: ${{ steps.nvchecker.outputs.nvcmp }}
     steps:
     - name: checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
 
     - name: gentoo
       run: |
@@ -34,51 +38,53 @@ jobs:
         echo "::endgroup::"
         # eix
         echo "::group::eix search packages"
-        pkgs=$(ACCEPT_LICENSE="*" ACCEPT_KEYWORDS="~amd64" EIX_LIMIT=0 NAMEVERSION="<category>/<name>-<version>\n" eix --pure-packages --in-overlay "$repo_name" --format '<bestversion:NAMEVERSION>')
+        pkgs=$(ACCEPT_LICENSE="*" ACCEPT_KEYWORDS="~amd64 ~arm64 ~loong ~riscv" EIX_LIMIT=0 NAMEVERSION="<category>/<name>-<version>\n" eix --pure-packages --in-overlay "$repo_name" --format '<bestversion:NAMEVERSION>')
         pkgs=$(qatom -F "\"%{CATEGORY}/%{PN}\": \"%{PV}\"," $pkgs) # remove revision
         echo "$pkgs"
         pkgs="{ ${pkgs::-1} }"
         echo "$pkgs" > .github/workflows/old_ver.json
+        # sed -r -i 's/_p[^"]*//' .github/workflows/old_ver.json
         cat .github/workflows/old_ver.json
         echo "::endgroup::"
 
     - name: nvchecker
       id: nvchecker
+      env:
+        GITHUB_TOKEN: ${{ secrets.GENTOO_ZH_NVCHECKER_PAT }}
       run: |
-        echo "::group::nvchecker and nvcmp"
+        echo "::group::nvchecker"
         cd .github/workflows/
         echo -e "[keys]\ngithub = \"${{ secrets.GITHUB_TOKEN }}\"" > keyfile.toml
         nvchecker --file overlay.toml --keyfile keyfile.toml
-
-        sed -r -i \
-          -e 's#(\.|-|_)?a([[:digit:]]+)(",?)$#_alpah\2\3#' \
-          -e 's#(\.|-|_)?p([[:digit:]]+)(",?)$#_p\2\3#' \
-          -e 's#(\.|-|_)?rc([[:digit:]]+)(",?)$#_rc\2\3#' \
-          new_ver.json
-
-        cat new_ver.json
-        echo "nvcmp=$(nvcmp --file overlay.toml --json --newer)" >> $GITHUB_OUTPUT
-
         echo "::endgroup::"
 
-    - name: setup node
-      uses: actions/setup-node@v2
-      with:
-        node-version: 16
+        echo "::group::nvcmp"
+        echo "nvcmp=$(nvcmp --file overlay.toml --json --newer | jq 'map({name, newver, oldver})' | jq -c .)" >> $GITHUB_OUTPUT
+        echo "::endgroup::"
 
-    - name: install github-script depends
-      run: |
-        npm install toml
+  issues-bumper:
+    needs: nvchecker
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include: ${{ fromJson(needs.nvchecker.outputs.nvcmp) }}
+    steps:
+    - name: Checkout bumpbot
+      uses: actions/checkout@v4
+      with:
+        repository: 'gentoo-zh-drafts/bumpbot'
+
+    - name: Checkout gentoo-zh
+      uses: actions/checkout@v4
+      with:
+        path: 'gentoo-zh'
 
     - name: update issues
-      uses: actions/github-script@v6
       timeout-minutes: 1
       env:
-        pkgs: ${{steps.nvchecker.outputs.nvcmp}}
-      with:
-        github-token: ${{ secrets.GENTOO_ZH_NVCHECKER_PAT }}
-        script: |
-          const script = require('./.github/workflows/issues-bumper.js');
-          (async function () {
-            await script({github, context, core});
-          })();
+        name: ${{ matrix.name }}
+        newver: ${{ matrix.newver }}
+        oldver: ${{ matrix.oldver }}
+        GITHUB_TOKEN: ${{ secrets.GENTOO_ZH_NVCHECKER_PAT }} # https://github.com/microcai/gentoo-zh/pull/3130
+      run: |
+        go run . --file gentoo-zh/.github/workflows/overlay.toml --name "$name" --newver "$newver" --oldver "$oldver"

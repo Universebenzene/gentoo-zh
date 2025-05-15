@@ -1,3 +1,16 @@
 # Copri <dev_zdx7ejsg@mail.com>
 # mask it for more test, unmask it after careful consideration.
 =dev-db/mongodb-5.3*
+
+# Dawn <dawn_xu_helloworld@163.com>
+# Seems it doesn't working fine on non-systemd OS after v1.7.0
+>=net-proxy/clash-verge-bin-1.7.0
+
+# mask sdl2-compat, unmask it if you wants it
+media-libs/libsdl2
+
+# tauri package is too hard to bump, use net-misc/biliup-app-bin
+# as alternative. The treeclean pull request opened:
+# https://github.com/microcai/gentoo-zh/pull/7021
+# Removal on 2025-05-21
+net-misc/biliup-app
