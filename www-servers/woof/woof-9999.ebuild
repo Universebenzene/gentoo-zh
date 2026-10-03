@@ -3,12 +3,12 @@
 
 EAPI=8
 
-PYTHON_COMPAT=( python3_{9..11} )
+PYTHON_COMPAT=( python3_{12..14} )
 
 inherit git-r3 python-single-r1
 
 DESCRIPTION="an ad-hoc single file webserver"
-HOMEPAGE="http://www.home.unix-ag.org/simon/woof.html https://github.com/simon-budig/woof"
+HOMEPAGE="https://www.home.unix-ag.org/simon/woof.html https://github.com/simon-budig/woof"
 EGIT_REPO_URI="https://github.com/simon-budig/${PN}.git"
 
 LICENSE="GPL-2"

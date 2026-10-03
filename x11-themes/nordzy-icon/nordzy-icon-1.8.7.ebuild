@@ -5,9 +5,9 @@ EAPI=8
 
 inherit xdg
 
-DESCRIPTION="A free and open source icon theme for Linux desktops using the Nord color palette"
-HOMEPAGE="https://github.com/alvatip/Nordzy-icon"
-SRC_URI="https://github.com/alvatip/Nordzy-icon/releases/download/${PV}/Nordzy.tar.gz -> ${P}.tar.gz"
+DESCRIPTION="A free and open source icon theme for Linux desktops"
+HOMEPAGE="https://github.com/MolassesLover/Nordzy-icon"
+SRC_URI="https://github.com/MolassesLover/Nordzy-icon/releases/download/${PV}/Nordzy.tar.gz -> ${P}.tar.gz"
 
 S="${WORKDIR}"
 

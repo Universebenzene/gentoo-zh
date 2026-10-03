@@ -6,28 +6,34 @@ EAPI=7
 inherit desktop xdg
 
 DESCRIPTION="Visualization for Electronic and STructural Analysis"
-HOMEPAGE="https://jp-minerals.org/vesta"
+HOMEPAGE="https://jp-minerals.org/vesta/"
 SRC_URI="https://jp-minerals.org/vesta/archives/${PV}/VESTA-gtk3.tar.bz2 -> ${PN}-${PV}.tar.bz2"
+
+S="${WORKDIR}/VESTA-gtk3"
 
 LICENSE="VESTA"
 SLOT="0"
 KEYWORDS="~amd64"
 
-RESTRICT="mirror strip"
+IUSE="powderplot"
+RESTRICT="bindist mirror strip"
 
 RDEPEND="
 	x11-libs/gtk+:3[wayland]
 	virtual/glu
 	dev-util/desktop-file-utils
 	x11-libs/libXtst
-	virtual/jdk
+	powderplot? (
+		virtual/jdk
+		x11-libs/gtk+:2
+	)
 	${DEPEND}"
-
-S="${WORKDIR}/VESTA-gtk3"
 
 QA_PREBUILT="*"
 
 src_install() {
+	use powderplot || rm -r PowderPlot || die
+
 	insinto /opt/VESTA
 	doins -r *
 	fperms +x /opt/VESTA/VESTA

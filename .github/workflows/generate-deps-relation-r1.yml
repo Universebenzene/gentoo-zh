@@ -7,17 +7,18 @@ on:
 
 jobs:
   generate:
+    if: github.repository == 'gentoo-zh/overlay' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
       - name: Checkout repository code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: deps-table
           fetch-depth: 5
       - name: Fetch gentoo-zh repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: master
           path: gentoo-zh
@@ -27,7 +28,7 @@ jobs:
         run: ./update-relation.sh
       - name: Push changes
         if: ${{ steps.update_relation.outputs.state == 'changed' }}
-        uses: ad-m/github-push-action@master
+        uses: ad-m/github-push-action@881a6320fdb16eb5318c5054f31c218aec2b324c
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: deps-table

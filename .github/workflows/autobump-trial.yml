@@ -1,0 +1,85 @@
+name: autobump-trial
+
+on:
+  workflow_dispatch:
+    inputs:
+      targets:
+        description: 'nvchecker issue numbers, space separated'
+        required: true
+
+concurrency:
+  group: autobump-trial
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  issues: write
+  packages: read
+
+jobs:
+  env:
+    permissions:
+      contents: read
+      packages: write
+    uses: ./.github/workflows/autobump-env.yml
+
+  trial:
+    needs: env
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    container:
+      image: ${{ needs.env.outputs.image }}
+      credentials:
+        username: gentoo-zh-bot
+        password: ${{ secrets.GITHUB_TOKEN }}
+      options: --privileged
+
+    steps:
+    - name: sync gentoo main tree
+      run: emerge-webrsync --no-pgp-verify
+
+    - name: tune portage for this runner
+      run: echo "MAKEOPTS=\"\${MAKEOPTS} -j$(nproc)\"" >> /etc/portage/make.conf
+
+    - name: bot identity
+      run: |
+        git config --global user.name  "gentoo-zh-bot"
+        git config --global user.email "bot@gentoozh.org"
+
+    - name: checkout
+      uses: actions/checkout@v7
+      with:
+        fetch-depth: 0
+
+    - name: fetch autobump-rb (the Ruby engine)
+      uses: actions/checkout@v7
+      with:
+        repository: gentoo-zh/autobump-rb
+        path: autobump-rb
+
+    - name: register overlay
+      run: |
+        mkdir -p /etc/portage/repos.conf
+        cat > /etc/portage/repos.conf/gentoo.conf << EOF
+        [DEFAULT]
+        main-repo = gentoo
+
+        [gentoo]
+        location = $(portageq get_repo_path / gentoo)
+        EOF
+        cat > /etc/portage/repos.conf/repo.conf << EOF
+        [$(cat profiles/repo_name)]
+        location = $(realpath .)
+        priority = 0
+        EOF
+
+    - name: build-trial each target (no PR, no opt-in gate)
+      env:
+        GH_TOKEN: ${{ github.token }}
+        AUTOBUMP_SYNC_REMOTE: origin
+        AUTOBUMP_UPSTREAM_REPO: gentoo-zh/overlay
+        AUTOBUMP_OP_TIMEOUT: '2700'
+        GH_TOKEN_GENTOO_ZH: ${{ github.token }}
+        GH_TOKEN_GENTOO_ZH_DRAFTS: ${{ github.token }}
+        TARGETS: ${{ inputs.targets }}
+      run: scripts/autobump-trial.sh

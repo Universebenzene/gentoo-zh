@@ -2,11 +2,10 @@
 <!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
 <pkgmetadata>
 	<maintainer type="person">
-		<email>douglarek@gmail.com</email>
-		<name>Leo Douglas</name>
+		<email>dev@wangxianggang.com</email>
+		<name>Xianggang Wang</name>
 	</maintainer>
 	<use>
-		<flag name="fcitx">Enable support for <pkg>app-i18n/fcitx</pkg></flag>
-		<flag name="ibus">Enable support for <pkg>app-i18n/ibus</pkg></flag>
+		<flag name="bwrap">Use <pkg>sys-apps/bubblewrap</pkg> to reduce filesystem exposure and limit privacy leakage.</flag>
 	</use>
 </pkgmetadata>

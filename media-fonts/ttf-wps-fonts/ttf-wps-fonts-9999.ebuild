@@ -1,4 +1,4 @@
-# Copyright 1999-2024 Gentoo Authors
+# Copyright 1999-2026 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -6,18 +6,17 @@ DISABLE_AUTOFORMATTING=true
 inherit font unpacker git-r3
 
 DESCRIPTION="Symbol fonts required by wps-office"
-HOMEPAGE="https://github.com/iamdh4/ttf-wps-fonts"
+HOMEPAGE="https://github.com/dv-anomaly/ttf-wps-fonts"
 
 LICENSE="all-rights-reserved"
 SLOT="0"
-KEYWORDS="amd64 arm ppc ppc64 x86"
 
-EGIT_REPO_URI="https://github.com/iamdh4/ttf-wps-fonts.git"
+EGIT_REPO_URI="https://github.com/dv-anomaly/ttf-wps-fonts.git"
 
 FONT_SUFFIX="ttf"
 
 # Only installs fonts
-RESTRICT="binchecks strip test"
+RESTRICT="binchecks bindist mirror strip test"
 
 pkg_postinst() {
 	unset FONT_CONF # override default message

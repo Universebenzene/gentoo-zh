@@ -6,19 +6,18 @@ EAPI=8
 inherit desktop unpacker xdg
 DESCRIPTION="Document Viewer for CAJ, KDH, NH, TEB and PDF format"
 
-HOMEPAGE="http://cajviewer.cnki.net"
+HOMEPAGE="https://cajviewer.cnki.net"
 SRC_URI="https://download.cnki.net/cajPackage/CAJLinuxPackage/${PN}_${PV}_amd64.deb"
 S="${WORKDIR}"
 
 LICENSE="CAJVIEWER-EULA"
 SLOT="0"
 KEYWORDS="~amd64"
-RESTRICT="mirror strip"
+RESTRICT="bindist mirror strip"
 
 RDEPEND="
 	dev-db/freetds
-	dev-qt/qtcore:5
-	dev-qt/qtdeclarative:5
+	dev-libs/libxml2
 	media-libs/tiff-compat:4
 "
 DEPEND="${RDEPEND}"

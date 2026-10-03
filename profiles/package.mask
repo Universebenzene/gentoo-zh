@@ -1,16 +1,25 @@
-# Copri <dev_zdx7ejsg@mail.com>
-# mask it for more test, unmask it after careful consideration.
-=dev-db/mongodb-5.3*
+# Copyright 1999-2026 Gentoo Authors
+# Distributed under the terms of the GNU General Public License v2
 
-# Dawn <dawn_xu_helloworld@163.com>
-# Seems it doesn't working fine on non-systemd OS after v1.7.0
->=net-proxy/clash-verge-bin-1.7.0
+# Xianggang Wang <dev@wangxianggang.com> (2026-09-29)
+# Motrix Next is superseded by net-misc/rayburst-bin. Rayburst does not import
+# its settings, tasks or history; finish active downloads before switching.
+# Removal on 2026-10-29.
+net-misc/motrix-next-bin
 
-# mask sdl2-compat, unmask it if you wants it
-media-libs/libsdl2
+# Zakk <zakk@gentoozh.org> (2026-09-11)
+# Superseded by net-im/wechat[bwrap].
+# Removal on 2026-10-11.
+net-im/wechat-universal-bwrap
 
-# tauri package is too hard to bump, use net-misc/biliup-app-bin
-# as alternative. The treeclean pull request opened:
-# https://github.com/microcai/gentoo-zh/pull/7021
-# Removal on 2025-05-21
-net-misc/biliup-app
+# Zakk <zakk@gentoozh.org> (2026-08-12)
+# This legacy release is no longer updated. arm64 and loong users should use
+# app-office/wps-office365-edu, which supports offline use.
+=app-office/wps-office-11.1.0.11719-r2
+
+# jinqiang zhang <peeweep@0x0.ee> (2026-08-09)
+# gentoo-zh's virtual/dist-kernel is incompatible with ::gentoo's
+# virtual/dist-kernel, only gentoo-zh's xanmod-kernel, gentoo-cjk-kernel
+# and gentoo-cjk-kernel-bin use it.
+# Manually unmask it if you need any of them.
+virtual/dist-kernel

@@ -1,0 +1,16 @@
+#!/sbin/openrc-run
+# Copyright 2026 Gentoo Authors
+# Distributed under the terms of the GNU General Public License v2
+
+description="An advanced web panel built for sing-box"
+
+command="/usr/bin/sui"
+command_background="true"
+directory="/var/lib/s-ui"
+pidfile="/run/${RC_SVCNAME}.pid"
+
+export SUI_DB_FOLDER="${SUI_DB_FOLDER:-/var/lib/s-ui}"
+
+depend() {
+	need net
+}

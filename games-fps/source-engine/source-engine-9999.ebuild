@@ -3,7 +3,7 @@
 
 EAPI=8
 
-PYTHON_COMPAT=( python3_11 python3_12 )
+PYTHON_COMPAT=( python3_{12..14} )
 PYTHON_REQ_USE='threads(+)'
 
 inherit waf-utils git-r3 python-any-r1
@@ -15,11 +15,12 @@ EGIT_REPO_URI="https://github.com/nillerusr/source-engine.git"
 LICENSE="Source-SDK"
 SLOT="0"
 IUSE="debug"
+RESTRICT="bindist"
 BDEPEND="${PYTHON_DEPS}
 		 media-libs/libsdl2
 		 media-libs/freetype
 		 media-libs/fontconfig
-		 sys-libs/zlib
+		 virtual/zlib
 		 media-libs/libjpeg-turbo
 		 media-libs/libpng
 		 net-misc/curl
@@ -27,7 +28,6 @@ BDEPEND="${PYTHON_DEPS}
 
 src_configure() {
 	local conf=(
-		'-8'
 		$(usex debug '-T debug' '-T release')
 	)
 	waf-utils_src_configure "${conf[@]}"

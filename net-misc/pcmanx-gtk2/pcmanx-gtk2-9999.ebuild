@@ -10,8 +10,8 @@ HOMEPAGE="https://github.com/pcman-bbs/pcmanx"
 
 EGIT_REPO_URI="https://github.com/pcman-bbs/pcmanx.git"
 
-SLOT="0"
 LICENSE="GPL-2"
+SLOT="0"
 IUSE="+libnotify +proxy iplookup +wget"
 
 COMMON_DEPEND="
@@ -38,6 +38,9 @@ src_prepare() {
 		./build/changelog.sh > ChangeLog
 
 	eautoreconf
+	pushd libltdl > /dev/null || die
+	eautoreconf
+	popd > /dev/null || die
 
 	# this flag crashes CTermData::memset16()
 	filter-flags -ftree-vectorize

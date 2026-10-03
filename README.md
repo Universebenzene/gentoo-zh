@@ -1,84 +1,84 @@
-# How to add this overlay to your Gentoo system
+<div align="right">
+
+[English](./README.en.md) | 简体中文 | [正體中文](./README.zh-TW.md) | [廣東話](./README.yue.md)
+
+</div>
+
+# gentoo-zh
+
+Overlay for Gentoo Users.\
+gentoo-zh 是一个包容的 overlay。
+
+> [!NOTE]
+> gentoo-zh overlay 已迁移至 https://github.com/gentoo-zh/overlay 。旧的 GitHub URL 会继续重定向。如果你手动配置过 remote，可以在方便时更新。
+> 详情请参见 [MIGRATION.md](./MIGRATION.md)。
+
+## 社区
+
+[![官网](https://img.shields.io/badge/%E5%AE%98%E7%BD%91-gentoozh.org-54487A?logo=gentoo&logoColor=white)](https://gentoozh.org/)
+[![GitHub Issues](https://img.shields.io/badge/GitHub-Issues-181717?logo=github)](https://github.com/gentoo-zh/overlay/issues)
+[![Email](https://img.shields.io/badge/Email-overlay%40gentoozh.org-000000?logo=data:image/svg%2Bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjIiPjxyZWN0IHg9IjIiIHk9IjQiIHdpZHRoPSIyMCIgaGVpZ2h0PSIxNiIvPjxwYXRoIGQ9Im0yIDYgMTAgNyAxMC03Ii8%2BPC9zdmc%2B)](mailto:overlay@gentoozh.org)
+[![论坛](https://img.shields.io/badge/%E8%AE%BA%E5%9D%9B-forum.gentoozh.org-54487A?logo=discourse&logoColor=white)](https://forum.gentoozh.org/)
+[![维基](https://img.shields.io/badge/%E7%BB%B4%E5%9F%BA-Gentoo--zh-54487A?logo=gentoo&logoColor=white)](https://wiki.gentoo.org/wiki/Gentoo-zh/zh-cn)
+[![Telegram 群组](https://img.shields.io/badge/%E7%BE%A4%E7%BB%84-gentoo__zh-26A5E4?logo=telegram&logoColor=white)](https://t.me/gentoo_zh)
+[![公告频道](https://img.shields.io/badge/%E5%85%AC%E5%91%8A-gentoocn-26A5E4?logo=telegram&logoColor=white)](https://t.me/gentoocn)
+[![Matrix](https://img.shields.io/badge/Matrix-%23gentoo--zh-000000?logo=matrix&logoColor=white)](https://matrix.to/#/%23gentoo-zh:matrix.gentoozh.org)
+[![IRC](https://img.shields.io/badge/IRC-%23gentoo--zh-000000?logo=liberadotchat&logoColor=white)](https://web.libera.chat/#gentoo-zh)
+
+overlay 相关问题优先使用 GitHub Issues。
+
+## 如何将此 overlay 添加到 Gentoo Linux
 
 ```
 eselect repository enable gentoo-zh
 emaint sync
 ```
 
-# rule no.1
+中国大陆镜像加速相关与 overlay 使用方式请参考：https://gentoozh.org/overlay
 
-DO NOT BREAK PEOPLE'S SYSTEM
+## distfiles 与二进制包
 
-# rule no.2
+部分软件包提供 distfiles 与二进制包，每晚触发构建，配置和镜像参考：https://distfiles.gentoozh.org
 
-DO NOT BREAK PEOPLE'S SYSTEM
+## 依赖关系表
 
-# rule no.3
+https://github.com/gentoo-zh/overlay/blob/deps-table/relation.md
 
-follow rule no.1 and no.2
+## 贡献
 
-# the dependencies table
+**不要破坏用户的系统。**
 
-https://github.com/microcai/gentoo-zh/blob/deps-table/relation.md
+* 我们欢迎所有人贡献，但请提交者在提交前谨慎确认。
+* pull request 中的每个提交都要包含所需的所有修改，不要无故拆分，例如 ebuild 和它的 `Manifest` 要在同一个提交里。
+* 每个 ebuild 修改在提交前要确保编译正确。
+* `LICENSE` 要与上游实际授权一致。授权不在 `::gentoo` 时把全文放进 [`licenses/`](./licenses)，归入 [`profiles/license_groups`](./profiles/license_groups) 的相应分组，并按其散布条款设置 `RESTRICT`。
+* 所有软件包都需要添加到 [`.github/workflows/overlay.toml`](./.github/workflows/overlay.toml) 中，并按照 `category/package` 的字母顺序插入相应位置。如果可以自动 bump，参见 [scripts/autobump.zh.md](./scripts/autobump.zh.md)。
+* 如果软件包不适合使用 nvchecker 检查版本更新，请在对应位置添加注释并说明原因；`acct-*`、`virtual` 也要注释。
+* 在打开 pull request 前，请先在本地运行 `pkgcheck scan --commits --net`。
+* 开 pull request 之后，请检查并修正 pkgcheck report 和 CI 报出的错误，QA 提示也要处理。
+* ebuild 只使用 `~arch` keyword，不要 stable keyword。
+* CI 会在 amd64 和 arm64 上构建。如果在你没有的架构上出现无法解决的问题，请移除那个 keyword。
+* 新增的软件包请持续维护，并使用 [pull request 模板](./.github/pull_request_template.md)。
+* 不再维护自己的软件包时，请在 issues 里找新维护者，或者在 [`profiles/package.mask`](./profiles/package.mask) 里 mask，到期后再移除。
 
-# commit message
+### 提交信息
 
-* for non-version bump commit, commit message should be like this:
+建议用 `pkgdev commit` 生成提交信息。版本升级格式如下：
 
-        $category/$package: one line short description message
-        {empty line}
-        multiple lines of description about why you change this.
-        if you change to fix the bug, and if there is an GitHub
-        issue entry for that bug, then point the bug link here.
-
-* for version bump commit, commit message should be like this:
-
-        $category/$package: version bump to $new_version
-
-# package review
-
-* I trust contributors that have commit rights, therefore commitors
-  should think carefully before committing.
-
-* If you want to discuss your commit/patch, push to *another branch* or send a
-  Pull Request and discuss in the GitHub Issue, mailing list, or talk to the maintainer
-  directly.
-
-* If you are sending a new pull request, make sure it contains all necessary commits
-  for a single contribution, e.g. don't send two pull requests for an ebuild and its
-  `Manifest`.
-
-* Every ebuild change should not produce compile error before
-  committing.
-
-* Every ebuild should be tested in every ARCH that it KEYWORDS for.
-  if not, don't claim that you support that keyword.
-
-* If you are writing the ebuild for a font, and you are using stantard font.eclass
-  to install the font, I could grant an exception for the must-tested-in-every-ARCH
-  rule. You could use something like
-
-  `KEYWORDS="alpha amd64 arm hppa ppc mips ~s390 ~sh sparc x86 ~x86-fbsd"`
-
-  But please don't abuse this exception. It must be a pure font package.
-
-# Distfiles mirror
-
-We provide a distfiles mirror that caches the distfiles in gentoo-zh.
-
-Our server, hosted on Finland:
 ```
-GENTOO_MIRRORS="${GENTOO_MIRRORS} https://distfiles.gentoocn.org"
+$category/$package: add $new_version, drop $old_version
 ```
 
-Chongqing University mirror:
+其他改动格式如下：
+
 ```
-GENTOO_MIRRORS="${GENTOO_MIRRORS} https://mirrors.cqu.edu.cn/gentoo-zh"
+$category/$package: one line short description message
+
+multiple lines of description about why you change this.
+if you change to fix the bug, and if there is an GitHub
+issue entry for that bug, then point the bug link here.
 ```
 
-Nanjing University mirror:
-```
-GENTOO_MIRRORS="${GENTOO_MIRRORS} https://mirrors.nju.edu.cn/gentoo-zh"
-```
+## AI 政策
 
-# See wiki for some package not working
+可以用生成式 AI 辅助，但它必须遵守 [AGENTS.md](./AGENTS.md)，且每个提交由贡献者负责：确保 ebuild 的质量和验证功能正确，ebuild 要实际做一遍冒烟测试再提交，pull request 描述要简短、精准、专业，写实测结果而不是猜测。贡献者、提交者与提交作者必须是人类，不能是 AI 工具或模型身份。

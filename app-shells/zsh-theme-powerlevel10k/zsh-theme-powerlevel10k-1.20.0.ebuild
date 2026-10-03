@@ -3,6 +3,8 @@
 
 EAPI=8
 
+inherit optfeature
+
 MY_PN="${PN##zsh-theme-}"
 
 DESCRIPTION="Theme for Zsh that emphasizes speed, flexibility and out-of-the-box experience"
@@ -45,5 +47,9 @@ src_install() {
 
 pkg_postinst() {
 	elog "To use this theme, source /usr/share/zsh/site-functions/powerlevel10k/powerlevel10k.zsh-theme in your ~/.zshrc"
-	elog "The full choice of style options is available only when using Nerd Fonts. For example: media-fonts/nerd-fonts"
+
+	optfeature_header "Install one of these for Nerd Font glyphs, or provide a patched font yourself:"
+	optfeature "the full choice of style options" \
+		media-fonts/nerd-fonts media-fonts/sarasa-term-sc-nerd \
+		media-fonts/symbols-nerd-font
 }

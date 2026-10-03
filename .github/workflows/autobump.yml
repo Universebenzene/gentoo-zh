@@ -1,0 +1,340 @@
+name: autobump
+
+on:
+  # Scheduled runs can start hours late, so chain from nvchecker.
+  workflow_run:
+    workflows: [nvchecker]
+    types: [completed]
+    branches: [master]
+  schedule:
+    - cron: '0 11 * * *'
+  workflow_dispatch:
+    inputs:
+      issues:
+        description: 'issue numbers, space separated (empty = all open)'
+        required: false
+        default: ''
+      limit:
+        description: 'max issues per run (0 = the whole queue)'
+        required: false
+        default: '0'
+      retry:
+        description: 'run the named issues again even if they are already recorded'
+        type: boolean
+        default: false
+      rebuild_env:
+        description: 'rebuild the worker environment image'
+        type: boolean
+        default: false
+      env_date:
+        description: 'run on an earlier environment image (YYYYMMDD, empty = today)'
+        required: false
+        default: ''
+      bundles_only:
+        description: 'prepare the vendor bundles of the queue and bump nothing'
+        type: boolean
+        default: false
+
+concurrency:
+  group: autobump
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  # A failed nvchecker run can still leave issues to bump.
+  wait:
+    if: >-
+      (github.repository == 'gentoo-zh/overlay' || github.event_name == 'workflow_dispatch')
+      && github.event.workflow_run.conclusion != 'cancelled'
+    runs-on: ubuntu-latest
+    steps:
+    # The issue search index lags issue creation.
+    - name: wait for the issues to settle
+      if: github.event_name == 'workflow_run'
+      run: sleep 60
+
+  env:
+    needs: plan
+    if: ${{ fromJSON(needs.plan.outputs.plan).matrix.include[0] != null }}
+    permissions:
+      contents: read
+      packages: write
+    uses: ./.github/workflows/autobump-env.yml
+    with:
+      force: ${{ github.event_name == 'workflow_dispatch' && inputs.rebuild_env }}
+      date: ${{ inputs.env_date || '' }}
+
+  plan:
+    needs: wait
+    runs-on: ubuntu-latest
+    outputs:
+      plan: ${{ steps.plan.outputs.plan }}
+
+    steps:
+    - name: checkout
+      uses: actions/checkout@v7
+
+    - name: fetch autobump-rb (the bundle controller)
+      uses: actions/checkout@v7
+      with:
+        repository: gentoo-zh/autobump-rb
+        path: autobump-rb
+
+    # App-created PRs trigger the package checks.
+    - name: mint app token
+      id: app-token
+      uses: actions/create-github-app-token@v3
+      with:
+        client-id: ${{ secrets.APP_CLIENT_ID }}
+        private-key: ${{ secrets.APP_PRIVATE_KEY }}
+        owner: gentoo-zh
+        repositories: overlay
+
+    # Only the planner dispatches bundle producers.
+    - name: mint gentoo-deps token
+      id: deps-token
+      continue-on-error: true
+      uses: actions/create-github-app-token@v3
+      with:
+        client-id: ${{ secrets.DRAFTS_BOT_CLIENT_ID }}
+        private-key: ${{ secrets.DRAFTS_BOT_PRIVATE_KEY }}
+        owner: gentoo-zh
+        repositories: gentoo-deps
+
+    - name: mint gentoo-zh-drafts token
+      id: drafts-token
+      continue-on-error: true
+      uses: actions/create-github-app-token@v3
+      with:
+        client-id: ${{ secrets.DRAFTS_BOT_CLIENT_ID }}
+        private-key: ${{ secrets.DRAFTS_BOT_PRIVATE_KEY }}
+        owner: gentoo-zh-drafts
+
+    - name: restore state
+      uses: actions/cache/restore@v6
+      with:
+        path: ${{ github.workspace }}/.autobump-state/autobump
+        key: autobump-state-${{ github.run_id }}
+        restore-keys: autobump-state-
+
+    - name: plan
+      id: plan
+      env:
+        GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        GH_TOKEN_GENTOO_ZH: ${{ steps.deps-token.outputs.token }}
+        GH_TOKEN_GENTOO_ZH_DRAFTS: ${{ steps.drafts-token.outputs.token }}
+        XDG_STATE_HOME: ${{ github.workspace }}/.autobump-state
+        AUTOBUMP_BUNDLE_CONTROLLER: autobump-rb/bin/bundles.py
+        ISSUES: ${{ inputs.issues }}
+        LIMIT: ${{ inputs.limit || 0 }}
+        RETRY: ${{ format('{0}', inputs.retry) == 'true' && '--retry' || '' }}
+        BUNDLES_ONLY: ${{ format('{0}', inputs.bundles_only) == 'true' && '--bundles-only' || '' }}
+        SHARDS: '8'
+      run: |
+        case "$ISSUES" in *[!0-9\ ]*) echo "issues must be numbers: $ISSUES" >&2; exit 1;; esac
+        case "$LIMIT" in ''|*[!0-9]*) echo "limit must be a number: $LIMIT" >&2; exit 1;; esac
+        # shellcheck disable=SC2086
+        plan=$(python3 scripts/autobump-sweep.py $ISSUES $RETRY $BUNDLES_ONLY --limit "$LIMIT" --comment --bundles bundles.json --bundles-delta autobump-delta-plan.json --plan "$SHARDS")
+        echo "plan=$plan" >> "$GITHUB_OUTPUT"
+
+    - name: upload bundle snapshot
+      uses: actions/upload-artifact@v7
+      with:
+        name: autobump-bundles
+        path: bundles.json
+        overwrite: true
+
+    - name: upload plan delta
+      uses: actions/upload-artifact@v7
+      with:
+        name: autobump-delta-plan
+        path: autobump-delta-plan.json
+        overwrite: true
+
+  bump:
+    needs: [env, plan]
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+      packages: read
+    if: ${{ fromJSON(needs.plan.outputs.plan).matrix.include[0] != null }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      max-parallel: 8
+      matrix: ${{ fromJSON(needs.plan.outputs.plan).matrix }}
+    # Source dependencies such as nodejs can take over an hour.
+    timeout-minutes: 360
+    container:
+      image: ${{ needs.env.outputs.image }}
+      credentials:
+        username: gentoo-zh-bot
+        password: ${{ secrets.GITHUB_TOKEN }}
+      options: --privileged
+
+    steps:
+    - name: sync gentoo main tree
+      run: emerge-webrsync --no-pgp-verify
+
+    - name: tune portage for this runner
+      run: echo "MAKEOPTS=\"\${MAKEOPTS} -j$(nproc)\"" >> /etc/portage/make.conf
+
+    # Every shard restores; only one saves because near-copies would evict the rest of the repo's 10 GB cache.
+    - name: restore dependency binpkgs
+      uses: actions/cache/restore@v6
+      with:
+        path: /var/cache/binpkgs
+        key: autobump-binpkgs-${{ github.run_id }}
+        restore-keys: autobump-binpkgs-
+
+    - name: checkout
+      uses: actions/checkout@v7
+      with:
+        fetch-depth: 0
+
+    - name: fetch autobump-rb (the Ruby engine)
+      uses: actions/checkout@v7
+      with:
+        repository: gentoo-zh/autobump-rb
+        path: autobump-rb
+
+    # The engine switches branches, so the snapshot stays outside the checkout.
+    - name: download bundle snapshot
+      continue-on-error: true
+      uses: actions/download-artifact@v8
+      with:
+        name: autobump-bundles
+        path: /tmp/autobump-bundles
+
+    - name: register overlay
+      run: |
+        mkdir -p /etc/portage/repos.conf
+        # pkgcore reads /etc/portage/repos.conf, not Portage's built-in default; declare gentoo or pkgdev manifest aborts.
+        cat > /etc/portage/repos.conf/gentoo.conf << EOF
+        [DEFAULT]
+        main-repo = gentoo
+
+        [gentoo]
+        location = $(portageq get_repo_path / gentoo)
+        EOF
+        cat > /etc/portage/repos.conf/repo.conf << EOF
+        [$(cat profiles/repo_name)]
+        location = $(realpath .)
+        priority = 0
+        EOF
+
+    - name: set CPU flags for the packages that need them
+      env:
+        PACKAGES: ${{ matrix.packages }}
+      run: |
+        for pkg in $PACKAGES; do
+          if scripts/needs-cpu-flags.sh "$pkg"; then
+            echo "$pkg $(cpuid2cpuflags)"
+          fi
+        done > /etc/portage/package.use/autobump-cpuflags
+        cat /etc/portage/package.use/autobump-cpuflags
+
+    - name: mint app token
+      id: app-token
+      uses: actions/create-github-app-token@v3
+      with:
+        client-id: ${{ secrets.APP_CLIENT_ID }}
+        private-key: ${{ secrets.APP_PRIVATE_KEY }}
+        owner: gentoo-zh
+        repositories: overlay
+
+    - name: git identity
+      run: |
+        git config --global --add safe.directory "$(realpath .)"
+        git config user.name  "gentoo-zh-bot"
+        git config user.email "bot@gentoozh.org"
+
+    - name: bump shard
+      env:
+        GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        AUTOBUMP_SYNC_REMOTE: origin
+        # Container mounts differ from github.workspace; use a relative engine path.
+        AUTOBUMP_ENGINE: ruby autobump-rb/bin/autobump
+        AUTOBUMP_OP_TIMEOUT: '7200'
+        # runner.temp is a host path absent from the container.
+        AUTOBUMP_EVIDENCE_DIR: /tmp/autobump-evidence
+        AUTOBUMP_BUNDLE_STATUS: /tmp/autobump-bundles/bundles.json
+        SHARD: ${{ toJSON(fromJSON(needs.plan.outputs.plan).shards[matrix.shard]) }}
+        SHARD_ID: ${{ matrix.shard }}
+        LIMIT: ${{ inputs.limit || 0 }}
+      run: python3 scripts/autobump-sweep.py --worker "$SHARD" --delta "autobump-delta-$SHARD_ID.json" --limit "$LIMIT" --pr --comment
+
+    - name: save dependency binpkgs
+      if: always() && matrix.shard == 0
+      uses: actions/cache/save@v6
+      with:
+        path: /var/cache/binpkgs
+        key: autobump-binpkgs-${{ github.run_id }}
+
+    - name: upload shard delta
+      if: always()
+      uses: actions/upload-artifact@v7
+      with:
+        name: autobump-delta-${{ matrix.shard }}
+        path: autobump-delta-${{ matrix.shard }}.json
+
+    - name: upload escalation evidence
+      if: always()
+      continue-on-error: true
+      uses: actions/upload-artifact@v7
+      with:
+        name: autobump-evidence-${{ matrix.shard }}
+        path: /tmp/autobump-evidence
+        if-no-files-found: ignore
+
+  collect:
+    needs: [plan, bump]
+    if: ${{ always() && needs.plan.result == 'success' }}
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: checkout
+      uses: actions/checkout@v7
+
+    - name: restore state
+      uses: actions/cache/restore@v6
+      with:
+        path: ${{ github.workspace }}/.autobump-state/autobump
+        key: autobump-state-${{ github.run_id }}
+        restore-keys: autobump-state-
+
+    - name: download deltas
+      uses: actions/download-artifact@v8
+      with:
+        pattern: autobump-delta-*
+        path: autobump-deltas
+        merge-multiple: true
+
+    - name: collect
+      env:
+        XDG_STATE_HOME: ${{ github.workspace }}/.autobump-state
+        PLAN: ${{ needs.plan.outputs.plan }}
+      run: |
+        shopt -s nullglob
+        python3 scripts/autobump-sweep.py --collect "$PLAN" autobump-deltas/*.json
+
+    - name: save state
+      if: success()
+      uses: actions/cache/save@v6
+      with:
+        path: ${{ github.workspace }}/.autobump-state/autobump
+        # Cache keys are written once; run_attempt gives a rerun its own key.
+        key: autobump-state-${{ github.run_id }}-${{ github.run_attempt }}
+
+    - name: fail on a bundle controller error
+      if: always() && fromJSON(needs.plan.outputs.plan).bundle_error
+      env:
+        BUNDLE_ERROR: ${{ fromJSON(needs.plan.outputs.plan).bundle_error }}
+      run: |
+        echo "::error title=bundles::$BUNDLE_ERROR"
+        exit 1

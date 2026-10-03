@@ -1,0 +1,118 @@
+name: tatt
+
+on:
+  pull_request:
+    branches:
+      - master
+    types: [opened, reopened, synchronize, labeled]
+    paths-ignore:
+      - '.github/**'
+      - 'metadata/**'
+      - 'profiles/**'
+
+concurrency:
+  # any other label gets its own group, so adding it cannot cancel a running test
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}${{ github.event.action == 'labeled' && github.event.label.name != 'tatt' && '-label' || '' }}
+  cancel-in-progress: true
+
+jobs:
+  scan:
+    name: scan changed ebuilds
+    if: github.event.action != 'labeled' || github.event.label.name == 'tatt'
+    runs-on: ubuntu-latest
+    outputs:
+      targets: ${{ steps.targets.outputs.targets }}
+
+    steps:
+    - uses: actions/checkout@v7
+      with:
+        repository: ${{ github.event.pull_request.head.repo.full_name }}
+        ref: ${{ github.event.pull_request.head.sha }}
+
+    - name: select ebuilds
+      id: targets
+      env:
+        GH_TOKEN: ${{ github.token }}
+        BASE: ${{ github.event.pull_request.base.sha }}
+        PR: ${{ github.event.pull_request.number }}
+        LABELED: ${{ contains(github.event.pull_request.labels.*.name, 'tatt') }}
+      run: |
+        targets=$(scripts/tatt-targets.sh "$PR" "$BASE" "$LABELED")
+        echo "targets: $targets"
+        echo "targets=$targets" >> "$GITHUB_OUTPUT"
+
+  tatt:
+    name: tatt ${{ matrix.target.atom }}
+    needs: scan
+    if: ${{ fromJson(needs.scan.outputs.targets)[0] != null }}
+    strategy:
+      fail-fast: false
+      matrix:
+        target: ${{ fromJSON(needs.scan.outputs.targets) }}
+
+    runs-on: ubuntu-latest
+    container:
+      image: gentoo/stage3:amd64-desktop-systemd
+      options: --privileged
+    env:
+      ATOM: ${{ matrix.target.atom }}
+      KEYWORD: ${{ matrix.target.keyword }}
+
+    steps:
+    - name: fetch repo
+      uses: actions/checkout@v7
+      with:
+        repository: ${{ github.event.pull_request.head.repo.full_name }}
+        ref: ${{ github.event.pull_request.head.sha }}
+
+    - name: setup portage config
+      uses: ./.github/actions/setup-gentoo
+
+    - name: setup repo
+      run: |
+        mkdir -p /etc/portage/package.accept_keywords
+        echo "$ATOM $KEYWORD" > /etc/portage/package.accept_keywords/ci
+
+    - name: setup tatt and cpu flags
+      run: |
+        FEATURES="getbinpkg" emerge --oneshot --quiet --autounmask=y --autounmask-write=y --autounmask-continue=y \
+            app-portage/tatt app-portage/cpuid2cpuflags
+        if scripts/needs-cpu-flags.sh "$ATOM"; then
+          echo "$ATOM $(cpuid2cpuflags)" > /etc/portage/package.use/cpu-flags
+        fi
+
+        # cpu_flags_* stay as set above: toggling them would test binaries the host cannot run
+        cat > ~/.tatt << EOF
+        arch=amd64
+        usecombis=4
+        emergeopts="--autounmask=y --autounmask-write=y --autounmask-continue=y"
+        ignoreprefix=$(scripts/tatt-targets.sh --ignore-prefixes)
+        EOF
+
+    - name: update perl to the binhost version
+      run: |
+        if scripts/needs-perl-update.sh "$ATOM"; then
+          FEATURES="getbinpkg" emerge --oneshot --update --quiet dev-lang/perl
+          FEATURES="getbinpkg" perl-cleaner --all -- --quiet --jobs 4
+        fi
+
+    - name: emerge --onlydeps
+      run: FEATURES="getbinpkg" emerge --onlydeps --jobs 2 --quiet --autounmask=y --autounmask-write=y --autounmask-continue=y "$ATOM"
+
+    - name: run tatt
+      run: |
+        mkdir -p /report
+        cd /report
+        tatt -u "$ATOM"
+        # tatt's emerge writes to /dev/tty, which a container has only under a pseudo-terminal
+        script -qec "bash ./*-useflags.sh" /dev/null
+
+    - name: report
+      if: ${{ always() }}
+      run: |
+        {
+            echo "### tatt $ATOM"
+            echo '```'
+            cat /report/*.report 2> /dev/null || echo "no report"
+            echo '```'
+        } >> "$GITHUB_STEP_SUMMARY"

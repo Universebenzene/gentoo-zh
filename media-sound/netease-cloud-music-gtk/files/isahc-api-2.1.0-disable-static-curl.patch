@@ -1,0 +1,12 @@
+diff --git a/Cargo.toml b/Cargo.toml
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -6,7 +6,7 @@ edition = "2021"
+ # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+ 
+ [dependencies]
+-isahc = { version = "^2", features = ["cookies"] }
++isahc = { version = "^2", default-features = false, features = ["cookies", "http2", "text-decoding"] }
+ lazy_static = "*"
+ regex = "*"
+ urlqstring = "*"

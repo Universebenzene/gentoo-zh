@@ -2,11 +2,11 @@
 <!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
 <pkgmetadata>
 	<maintainer type="person">
-		<email>douglarek@gmail.com</email>
-		<name>Leo Douglas</name>
+		<email>admin@zakk.au</email>
+		<name>Zakkaus</name>
 	</maintainer>
 	<use>
-		<flag name="egl">Use EGL platform, enables smooth rending in high refresh rate monitors on X11/Xwayland</flag>
-		<flag name="wayland">Run in wayland mode under wayland sessions, xwayland otherwise. This flag doesn't affect x11 sessions.</flag>
+		<flag name="egl">Use EGL for OpenGL rendering</flag>
+		<flag name="wayland">Enable Wayland support with the Ozone platform</flag>
 	</use>
 </pkgmetadata>

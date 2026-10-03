@@ -9,9 +9,9 @@ DESCRIPTION="PCMan is a gtk+ based free BBS client"
 HOMEPAGE="https://github.com/pcman-bbs/pcmanx"
 SRC_URI="https://github.com/pcman-bbs/pcmanx/releases/download/${PV}/${P}.tar.xz"
 
-KEYWORDS="~amd64"
-SLOT="0"
 LICENSE="GPL-2"
+SLOT="0"
+KEYWORDS="~amd64"
 IUSE="+libnotify +proxy iplookup +wget"
 
 COMMON_DEPEND="
@@ -35,6 +35,9 @@ DOCS=( TODO README NEWS ChangeLog AUTHORS )
 
 src_prepare() {
 	eautoreconf
+	pushd libltdl > /dev/null || die
+	eautoreconf
+	popd > /dev/null || die
 
 	# this flag crashes CTermData::memset16()
 	filter-flags -ftree-vectorize

@@ -1,0 +1,32 @@
+[Unit]
+Description=Hysteria Client Service
+Documentation=https://hysteria.network/
+After=network.target
+
+[Service]
+Type=simple
+Restart=on-failure
+ExecStart=/usr/bin/hysteria client --config /etc/hysteria/%i.yaml --disable-update-check
+WorkingDirectory=~
+User=hysteria
+Group=hysteria
+Environment=HYSTERIA_LOG_LEVEL=info
+CapabilityBoundingSet=CAP_NET_ADMIN CAP_NET_BIND_SERVICE CAP_NET_RAW
+AmbientCapabilities=CAP_NET_ADMIN CAP_NET_BIND_SERVICE CAP_NET_RAW
+NoNewPrivileges=true
+
+# further hardening
+ProtectSystem=full
+ProtectHome=yes
+ProtectControlGroups=yes
+ProtectKernelLogs=yes
+ProtectKernelModules=yes
+ProtectKernelTunables=yes
+ProtectClock=yes
+ProtectProc=noaccess
+PrivateTmp=yes
+RestrictNamespaces=yes
+RestrictSUIDSGID=yes
+
+[Install]
+WantedBy=multi-user.target

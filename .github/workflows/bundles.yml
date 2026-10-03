@@ -1,0 +1,77 @@
+name: bundles
+
+on:
+  workflow_dispatch:
+    inputs:
+      packages:
+        description: 'category/package atoms, space separated'
+        required: true
+      version:
+        description: 'Gentoo version (one package only; empty = the newest ebuild)'
+        required: false
+        default: ''
+      mode:
+        description: 'status reads, prepare dispatches what is missing'
+        type: choice
+        options: [status, prepare]
+        default: status
+
+permissions: {}
+
+jobs:
+  bundles:
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v7
+
+    - name: fetch autobump-rb (the bundle controller)
+      uses: actions/checkout@v7
+      with:
+        repository: gentoo-zh/autobump-rb
+        path: autobump-rb
+
+    # One failed token mint must not prevent the other owner from running.
+    - name: mint gentoo-deps token
+      id: deps-token
+      continue-on-error: true
+      uses: actions/create-github-app-token@v3
+      with:
+        client-id: ${{ secrets.DRAFTS_BOT_CLIENT_ID }}
+        private-key: ${{ secrets.DRAFTS_BOT_PRIVATE_KEY }}
+        owner: gentoo-zh
+        repositories: gentoo-deps
+
+    - name: mint gentoo-zh-drafts token
+      id: drafts-token
+      continue-on-error: true
+      uses: actions/create-github-app-token@v3
+      with:
+        client-id: ${{ secrets.DRAFTS_BOT_CLIENT_ID }}
+        private-key: ${{ secrets.DRAFTS_BOT_PRIVATE_KEY }}
+        owner: gentoo-zh-drafts
+
+    - name: bundles
+      env:
+        GH_TOKEN_GENTOO_ZH: ${{ steps.deps-token.outputs.token }}
+        GH_TOKEN_GENTOO_ZH_DRAFTS: ${{ steps.drafts-token.outputs.token }}
+        PACKAGES: ${{ inputs.packages }}
+        VERSION: ${{ inputs.version }}
+        MODE: ${{ inputs.mode }}
+      run: |
+        case "$MODE" in status|prepare) ;; *) echo "mode must be status or prepare: $MODE" >&2; exit 1;; esac
+        case "$PACKAGES" in ''|*[!A-Za-z0-9_.+/\ -]*) echo "packages must be category/package atoms: $PACKAGES" >&2; exit 1;; esac
+        case "$VERSION" in *[!A-Za-z0-9_.+-]*) echo "not a version: $VERSION" >&2; exit 1;; esac
+        args=()
+        [ -n "$VERSION" ] && args=(--version "$VERSION")
+        # shellcheck disable=SC2086
+        python3 autobump-rb/bin/bundles.py "$MODE" $PACKAGES "${args[@]}" --out bundles.json
+
+    - name: upload snapshot
+      if: always()
+      continue-on-error: true
+      uses: actions/upload-artifact@v7
+      with:
+        name: bundles
+        path: bundles.json
+        if-no-files-found: ignore

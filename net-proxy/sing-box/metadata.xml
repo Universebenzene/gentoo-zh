@@ -15,13 +15,19 @@
 		<flag name="grpc">Build with standard gRPC support</flag>
 		<flag name="dhcp">Build with DHCP support</flag>
 		<flag name="wireguard">Build with WireGuard support</flag>
-		<flag name="ech">Build with TLS ECH extension support for TLS outbound</flag>
 		<flag name="utls">Build with uTLS support for TLS outbound</flag>
-		<flag name="reality">Build with reality TLS server support</flag>
 		<flag name="acme">Build with ACME TLS certificate issuer support</flag>
 		<flag name="clash-api">Build with Clash API support</flag>
 		<flag name="v2ray-api">Build with V2Ray API support</flag>
 		<flag name="gvisor">Build with gVisor support</flag>
 		<flag name="tor">Build with embedded Tor support</flag>
+		<flag name="tailscale">Build with Tailscale support</flag>
+		<flag name="ccm">Build with Claude Code Multiplexer service support</flag>
+		<flag name="ocm">Build with OpenAI Codex Multiplexer service support</flag>
+		<flag name="naive">Build with NaiveProxy outbound support</flag>
+		<flag name="cloudflared">Build with Cloudflare Tunnel inbound support</flag>
+		<flag name="openconnect">Build with OpenConnect client support</flag>
+		<flag name="openvpn">Build with OpenVPN client and server support</flag>
+		<flag name="usbip">Build with USB/IP service support</flag>
 	</use>
 </pkgmetadata>

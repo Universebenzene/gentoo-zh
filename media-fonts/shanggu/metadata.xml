@@ -10,6 +10,7 @@
 		<flag name="round">Install ShangguRound font family</flag>
 		<flag name="sans">Install ShangguSans font family</flag>
 		<flag name="serif">Install ShangguSerif font family (default)</flag>
+		<flag name="variant">Install ShangguSansVF and ShangguSerifVF font families</flag>
 	</use>
 	<upstream>
 		<remote-id type="github">GuiWonder/Shanggu</remote-id>
