@@ -1,8 +1,16 @@
 name: pkgcheck-comment
 on:
   workflow_run:
-    workflows: [pkgcheck]
-    types: [completed]
+    # pr-rules also reruns on a description edit, which pkgcheck does not
+    workflows: [pkgcheck, pr-rules, emerge-on-pr]
+    types: [requested, completed]
+
+# A run's requested and completed events share a group, so they are handled
+# in that order. Each section has its own group: a group keeps only one
+# pending run, and a newer one would cancel it.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.workflow_run.name }}-${{ github.event.workflow_run.head_sha }}
+  cancel-in-progress: false
 
 permissions:
   contents: read
@@ -11,24 +19,41 @@ permissions:
 
 jobs:
   comment:
-    if: github.event.workflow_run.event == 'pull_request'
+    if: >-
+      github.event.workflow_run.event == 'pull_request' &&
+      !(github.event.action == 'requested' && github.event.workflow_run.name == 'pr-rules')
     runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+      RUN_URL: ${{ github.event.workflow_run.html_url }}
     steps:
     - name: checkout
       uses: actions/checkout@v7
 
-    - name: Check for the report
+    - name: show the run in progress
+      if: github.event.action == 'requested'
+      env:
+        WORKFLOW: ${{ github.event.workflow_run.name }}
+      run: |
+        case $WORKFLOW in
+          pkgcheck) scripts/comment-status.sh pkgcheck ":hourglass: scanning \`${HEAD_SHA:0:9}\`, see the [run](${RUN_URL})" ;;
+          emerge-on-pr) scripts/comment-status.sh elog ":hourglass: emerging \`${HEAD_SHA:0:9}\`, see the [run](${RUN_URL})" ;;
+        esac
+
+    - name: check for the report
+      if: github.event.action == 'completed'
       id: report
       env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        REPO: ${{ github.repository }}
         RUN_ID: ${{ github.event.workflow_run.id }}
       run: |
-        artifacts=$(gh api "repos/$REPO/actions/runs/$RUN_ID/artifacts" --paginate --slurp)
+        artifacts=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$RUN_ID/artifacts" --paginate --slurp)
         available=$(jq 'any(.[] | .artifacts[]; .name == "pkgcheck-report")' <<< "$artifacts")
         echo "available=$available" >> "$GITHUB_OUTPUT"
+        elog=$(jq 'any(.[] | .artifacts[]; .name | startswith("elog-"))' <<< "$artifacts")
+        echo "elog=$elog" >> "$GITHUB_OUTPUT"
 
-    - name: Download the report
+    - name: download the report
       if: steps.report.outputs.available == 'true'
       uses: actions/download-artifact@v8
       with:
@@ -37,11 +62,110 @@ jobs:
         run-id: ${{ github.event.workflow_run.id }}
         github-token: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Post the report
+    - name: post the report
       if: steps.report.outputs.available == 'true'
-      env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        REPO: ${{ github.repository }}
-        HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
-        RUN_URL: ${{ github.event.workflow_run.html_url }}
       run: scripts/pkgcheck-comment.sh pkgcheck-report
+
+    - name: post a missing report
+      if: steps.report.outputs.available == 'false' && github.event.workflow_run.name == 'pkgcheck'
+      run: |
+        scripts/comment-status.sh pkgcheck ":x: the scan left no report, see the [run](${RUN_URL})"
+
+    - name: download the elog
+      if: steps.report.outputs.elog == 'true'
+      uses: actions/download-artifact@v8
+      with:
+        pattern: elog-*
+        path: elog
+        run-id: ${{ github.event.workflow_run.id }}
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: post the elog
+      if: steps.report.outputs.elog == 'true'
+      run: scripts/emerge-elog-comment.sh elog
+
+    # a successful run without elog had no emerge targets
+    - name: post a missing elog
+      if: steps.report.outputs.elog == 'false' && github.event.workflow_run.name == 'emerge-on-pr'
+      env:
+        CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+      run: |
+        if [ "$CONCLUSION" = success ]; then
+          scripts/comment-status.sh elog
+        else
+          scripts/comment-status.sh elog ":x: no package was emerged, see the [run](${RUN_URL})"
+        fi
+
+    # the pkgcheck and pr-rules runs of the same commit already post this
+    - name: explain why a pull request breaks the pull request rules
+      if: github.event.action == 'completed' && github.event.workflow_run.name != 'emerge-on-pr'
+      run: |
+        pulls=$(gh api "repos/$GITHUB_REPOSITORY/pulls?state=open&per_page=100" --paginate --slurp)
+        pr=$(jq -r --arg sha "$HEAD_SHA" 'first(.[][] | select(.head.sha == $sha) | .number) // empty' <<< "$pulls")
+        [ -n "$pr" ] || exit 0
+        bad=$(scripts/commit-rules.sh "$pr")
+        missing=$(scripts/pr-template.sh "$pr")
+        marker='<!-- pr-rules -->'
+        if [ -z "$bad$missing" ]; then
+          comments=$(gh api "repos/$GITHUB_REPOSITORY/issues/$pr/comments" --paginate --slurp)
+          jq -r --arg marker "$marker" '.[][] | select(.user.type == "Bot" and (.body | contains($marker))) | .id' <<< "$comments" |
+            while read -r id; do
+              gh api -X DELETE "repos/$GITHUB_REPOSITORY/issues/comments/$id" >/dev/null
+            done
+          exit 0
+        fi
+        echo "This pull request cannot be merged until it follows the rules below." > body.md
+        if [ -n "$bad" ]; then
+          cat >> body.md <<EOF
+
+        ## Commits
+
+        These commits break the commit rules:
+
+        $bad
+
+        ### Commit rules
+
+        1. **Subject**: start with the package or file the commit changes, a colon and a short summary.
+           \`\`\`
+           app-misc/foo: add 1.2.3, drop 1.2.2
+           app-misc/foo: fix the build with GCC 16
+           profiles: mask app-misc/foo
+           foo.eclass: support EAPI 9
+           \`\`\`
+        2. **Sign-off**: every commit ends with a \`Signed-off-by\` line.
+           \`\`\`
+           Signed-off-by: Your Name <you@example.com>
+           \`\`\`
+           \`git commit -s\` and \`pkgdev commit --signoff\` add it for you.
+        3. **No merge commits**: update the branch with \`git rebase\`, not \`git merge\` or the Update branch button.
+
+        ### How to fix
+
+        \`\`\`
+        git fetch https://github.com/gentoo-zh/overlay.git master
+        git rebase -i FETCH_HEAD          # mark a commit "reword" to fix its subject
+        git rebase --signoff FETCH_HEAD   # add Signed-off-by to every commit
+        git push --force-with-lease
+        \`\`\`
+        EOF
+        fi
+        if [ -n "$missing" ]; then
+          cat >> body.md <<EOF
+
+        ## Pull request template
+
+        The description lost these checkboxes of the [pull request template](https://github.com/gentoo-zh/overlay/blob/master/.github/pull_request_template.md):
+
+        $missing
+
+        Write the description above the template and keep the checkboxes. Leave a box unticked when it does not apply.
+        EOF
+        fi
+        cat >> body.md <<EOF
+
+        Fix the problems above. The \`pr-rules\` check runs again after a push or an edit of the description, and the pull request can be merged once it passes. See [CONTRIBUTING.en.md](https://github.com/gentoo-zh/overlay/blob/master/CONTRIBUTING.en.md).
+
+        $marker
+        EOF
+        scripts/upsert-comment.sh "$GITHUB_REPOSITORY" "$pr" "$marker" body.md

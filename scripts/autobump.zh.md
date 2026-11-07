@@ -13,7 +13,7 @@
 
 第 2 步有三种结果：
 
-* **可机械处理**：只改版本号且 emerge 通过，创建 PR。
+* **可机械处理**：只改版本号且 emerge 通过，创建 PR。以下情况 PR 会开成 draft：只构建了 amd64；GUI 启动检测失败；引擎接受了原本会交给人工的差异，例如调高了 Go 或 Rust 的最低版本、缺少 toolchain 依赖只能提示，或新版预编译包删掉了没有任何地方引用、安装和 smoke 测试也没有出问题的文件。PR 正文逐条列出接受的差异，issue 留言会写明开成 draft 的原因。
 * **需人工处理**：大版本跳变、依赖有变化、`files/` 里的 patch 要重新验证，或上游对 distfile 返回 404 或 403。因为上游没有这个文件，重试也不会成功，所以直接交给人。只在 issue 上记录证据，完整证据目录作为 run artifact 上传，不创建 PR。
 * **暂缓**：网络或镜像暂时不可用（超时、连接被重置、5xx），per-version vendor bundle 还没生成（下载前检查其 URL 返回 404），或者某个过重的依赖在 binhost 上没有 binpkg、从源码编译会超出 CI 限时。下次自动重试，重试若干次仍不行才交给人。
 
@@ -122,7 +122,7 @@ producer run 的分支就是这个 tag，或者它的 run name 以完整单词�
 
 ### 状态
 
-规划 shard 之前，autobump 检查每个 open nvchecker issue 的 bundle，只要该包有 `deps` 或 `bundle`，无论是否开启 `autobump`。只有 ready 的目标会分到 bump shard，那里的引擎通过 `--bundle-status` 读取快照。
+规划 shard 之前，autobump 检查每个 open nvchecker issue 的 bundle，只要该包有 `deps` 或 `bundle`，无论是否开启 `autobump`。只有 ready 的目标会分到 bump shard，那里的引擎通过 `--bundle-status` 读取快照。未开启 `autobump` 的包只会准备 bundle，issue 评论会说明 bundle 发布后需要手动 bump。
 
 * **ready**：release 已存在，且没有这个 tag 的 producer run 在排队或执行。
 * **pending**：有 producer run 在排队或执行；或者两者都没有，规划阶段已 dispatch 该 workflow。同一版本的每个 bundle 最多 dispatch 三次，指向同一版本的多个 issue 和重新执行的运行都计入这个次数。回应丢失或返回 5xx 的 dispatch 也计入，因为 GitHub 可能已经启动了 run；返回 4xx 的不计入。
@@ -182,9 +182,9 @@ gh workflow run autobump.yml --repo gentoo-zh/overlay -f bundles_only=true
 
 两种方式的输入相同，`issues` 只接受数字和空格。
 
-worker 跑在每天构建一次的镜像里（`autobump-env`）。`rebuild_env` 强制重建，`env_date` 指定用更早一天的镜像，保留最近三个。
+worker 使用每天构建一次的镜像（`autobump-env`）。`rebuild_env` 强制重建，`env_date` 指定用更早一天的镜像，保留最近三个。
 
-`limit` 限制这次运行自己挑出来的引擎尝试数，默认 0 表示整个队列都跑；手动指定的 issue 号不受它限制，全部都会尝试。规划阶段按缓存状态解析队列，把这些尝试分到互不重叠的 shard，跳过不占额度。
+每个包使用独立的新容器，最多同时执行八个工作，其余排队。`limit` 限制自动选择的尝试数，默认 0 不加限制；手动指定的 issue 不受 `limit` 限制。两种方式都受 GitHub matrix 的 256 个工作上限约束。跳过的包不占额度；超过上限的待更新包留到后续运行。
 
 一次运行分三段：规划、最多八个并行的 bump worker、合并。每个 worker 最多 360 分钟，到时由 GitHub 取消。每个计时操作各有两小时上限，`ebuild install`、`emerge` 和 `ebuild unpack` 超时后标记暂缓、下次重试，所以一个包可能在 worker 的六小时里用掉好几个两小时。
 

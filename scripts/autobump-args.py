@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 """Print a package's autobump engine flags, one per line.
 
-Shared by autobump-sweep and autobump-trial.yml: the trial workflow calls the engine
-directly, so without this a trial ran with different flags than the sweep it is meant
-to predict.
+Shared by autobump-sweep.py and autobump-trial.sh: the trial calls the engine directly,
+so without this a trial ran with different flags than the sweep it is meant to predict.
 
-    mapfile -t args < <(python3 scripts/autobump-args.py <category/package>)
+    python3 scripts/autobump-args.py <category/package>
     python3 scripts/autobump-args.py --describe <category/package>   # one phrase for the issue comment
 
 Exit 2 with a reason when the table asks for something the engine cannot honour.
@@ -23,7 +22,7 @@ def die(reason):
 
 def keep_old_flag(pkg, value):
     """`autobump` carries the retention: true replaces, N keeps N, "all" keeps every one."""
-    # `1` compares equal to True here and still means the number: keep only the new version
+    # `1 == True`, so test the type: true replaces, while 1 is a count passed as --keep-old=1
     if value is None or isinstance(value, bool) or value == 0:
         return []
     if value == "all":
@@ -50,6 +49,14 @@ def rewrite_flags(pkg, table):
             "--rewrite-regex", table[f"autobump_{name}_regex"]]
 
 
+def static_pin_flags(pkg, table):
+    """`autobump_static_pins` lists source pins that stay the same across versions."""
+    pins = table.get("autobump_static_pins", [])
+    if not isinstance(pins, list) or not all(isinstance(p, str) for p in pins):
+        die(f"{pkg}: autobump_static_pins must be a list of variable names")
+    return [f for p in pins for f in ("--static-pin", p)]
+
+
 def describe(flags):
     """The same settings in words, for the status comment autobump leaves on the issue."""
     said = []
@@ -60,6 +67,8 @@ def describe(flags):
             said.append(f"keeps the {flag.removeprefix('--keep-old=')} newest versions")
         elif flag == "--rewrite-var":
             said.append("rewrites a pinned variable")
+        elif flag == "--static-pin":
+            said.append("keeps a pinned variable")
     return "".join(f" · {s}" for s in said)
 
 
@@ -72,7 +81,7 @@ def main(argv):
     path = argv[1] if len(argv) > 1 else DEFAULT_TOML
     with open(path, "rb") as f:
         table = tomllib.load(f).get(pkg, {})
-    flags = keep_old_flag(pkg, table.get("autobump")) + rewrite_flags(pkg, table)
+    flags = keep_old_flag(pkg, table.get("autobump")) + rewrite_flags(pkg, table) + static_pin_flags(pkg, table)
     print(describe(flags) if as_words else "\n".join(flags))
 
 

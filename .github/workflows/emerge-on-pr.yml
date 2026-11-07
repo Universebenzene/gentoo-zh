@@ -1,4 +1,4 @@
-name: emerge
+name: emerge-on-pr
 
 on:
   pull_request:
@@ -13,15 +13,23 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
   scan:
-    name: scan changed ebuilds
+    name: select emerge targets
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
     outputs:
       targets: ${{ steps.packages.outputs.targets }}
+      image: ${{ steps.image.outputs.ref }}
 
     steps:
-    - uses: actions/checkout@v7
+    - name: checkout
+      uses: actions/checkout@v7
 
     - name: scan changed ebuilds
       env:
@@ -32,29 +40,43 @@ jobs:
         targets=$(scripts/emerge-targets.sh "$PR")
         echo "targets=$targets" >> "$GITHUB_OUTPUT"
 
+    - name: set image name
+      id: image
+      run: echo "ref=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/stage3" >> "$GITHUB_OUTPUT"
+
   build:
     name: emerge ${{ matrix.target.package }} (${{ matrix.target.profile }})
     needs: scan
-    if: ${{ fromJson(needs.scan.outputs.targets)[0] != null }}
+    if: fromJSON(needs.scan.outputs.targets)[0] != null
     strategy:
       fail-fast: false
       matrix:
         target: ${{ fromJSON(needs.scan.outputs.targets) }}
 
     runs-on: ${{ matrix.target.runner }}
+    permissions:
+      contents: read
+      packages: read
     container:
-      image: gentoo/stage3:${{ matrix.target.profile }}
+      image: ${{ needs.scan.outputs.image }}:${{ matrix.target.profile }}
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
       options: --privileged
 
     steps:
-    - name: fetch repo
+    - name: checkout
       uses: actions/checkout@v7
       with:
         repository: ${{ github.event.pull_request.head.repo.full_name }}
         ref: ${{ github.event.pull_request.head.sha }}
 
     - name: setup portage config
+      id: setup
       uses: ./.github/actions/setup-gentoo
+
+    - name: setup QA checks
+      run: scripts/emerge-qa.sh before
 
     - name: setup cpu flags
       env:
@@ -66,32 +88,80 @@ jobs:
           cat /etc/portage/package.use/cpu-flags
         fi
 
-    - name: update perl to the binhost version
-      env:
-        ATOM: ${{ matrix.target.package }}
-      run: |
-        if scripts/needs-perl-update.sh "$ATOM"; then
-          FEATURES="getbinpkg" emerge --oneshot --update --quiet dev-lang/perl
-          FEATURES="getbinpkg" perl-cleaner --all -- --quiet --jobs 4
-        fi
-
     - name: emerge --onlydeps packages
+      id: deps
+      shell: bash
       env:
         ATOM: ${{ matrix.target.package }}
       run: |
-        FEATURES="getbinpkg" emerge --onlydeps --jobs 2 --quiet --verbose --autounmask=y --autounmask-write=y --autounmask-continue=y "$ATOM"
+        scripts/emerge-report.sh snapshot
+        # a binpkg of the target would drop its build-time deps here, and the next step builds it from the ebuild
+        package=$(portageq pquery --no-filters -n "$ATOM")
+        FEATURES="getbinpkg" emerge --onlydeps --usepkg-exclude "$package" --jobs 2 --quiet --verbose --backtrack=300 --autounmask=y --autounmask-write=y --autounmask-continue=y "$ATOM" 2>&1 | tee /var/tmp/deps.log
         rm -rf /var/log/portage/elog/*
 
     - name: emerge packages
+      id: emerge
+      shell: bash
       env:
         ATOM: ${{ matrix.target.package }}
-      run: emerge --verbose --autounmask=y --autounmask-write=y --autounmask-continue=y "$ATOM"
+      run: emerge --verbose --backtrack=300 --autounmask=y --autounmask-write=y --autounmask-continue=y "$ATOM" 2>&1 | tee /var/tmp/emerge.log
 
-    - name: check Portage elog (fail if exists)
+    # pkg_prerm and pkg_postrm run on every removal; their elog is saved apart from the merge elog
+    - name: unmerge packages
+      id: unmerge
+      shell: bash
+      env:
+        ATOM: ${{ matrix.target.package }}
+      run: CLEAN_DELAY=0 PORTAGE_LOGDIR=/var/log/portage/unmerge emerge --unmerge "$ATOM" 2>&1 | tee /var/tmp/unmerge.log
+
+    # Portage cleans the build directory of every package that merged, so what is left failed
+    - name: save failed build logs
+      if: ${{ failure() }}
+      env:
+        LOG: build-log-${{ strategy.job-index }}.log
       run: |
-        if ls /var/log/portage/elog/* 1> /dev/null 2>&1; then
-          echo "Found Portage elog messages:"
-          cat /var/log/portage/elog/*
-          exit 1
-        fi
-        echo "No elog messages found."
+        for log in /var/tmp/portage/*/*/temp/build.log; do
+          [ -f "$log" ] || continue
+          pkg=${log#/var/tmp/portage/}
+          echo ">>> ${pkg%/temp/build.log}"
+          sed 's/\x1b\[[0-9;]*m//g' "$log"
+        done > "$LOG"
+        [ -s "$LOG" ] || rm -f "$LOG"
+
+    - name: upload failed build logs
+      id: build-logs
+      if: ${{ failure() }}
+      uses: actions/upload-artifact@v7
+      with:
+        path: build-log-${{ strategy.job-index }}.log
+        archive: false
+        if-no-files-found: ignore
+
+    - name: save portage elog
+      if: ${{ !cancelled() }}
+      env:
+        ATOM: ${{ matrix.target.package }}
+        PROFILE: ${{ matrix.target.profile }}
+        SETUP: ${{ steps.setup.outcome }}
+        DEPS: ${{ steps.deps.outcome }}
+        OUTCOME: ${{ steps.emerge.outcome }}
+        UNMERGE: ${{ steps.unmerge.outcome }}
+        BUILD_LOGS: ${{ steps.build-logs.outputs.artifact-url }}
+      run: scripts/emerge-report.sh save "$ATOM"
+
+    - name: split QA notices
+      if: ${{ !cancelled() }}
+      run: scripts/emerge-qa.sh after
+
+    - name: upload portage elog
+      if: ${{ !cancelled() }}
+      uses: actions/upload-artifact@v7
+      with:
+        name: elog-${{ strategy.job-index }}
+        path: elog-report/
+
+    - name: check portage elog
+      env:
+        ATOM: ${{ matrix.target.package }}
+      run: scripts/emerge-report.sh check "$ATOM"

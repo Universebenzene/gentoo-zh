@@ -1,0 +1,36 @@
+From: Xiangzhe <xiangzhedev@gmail.com>
+Subject: [PATCH] build: make libunwind detection authoritative
+
+UniversalStacktrace probes for libunwind headers independently of CMake.  If
+CMake has deliberately disabled or failed to find libunwind, this compiles
+calls to libunwind without linking it.  Pass the CMake result to the header so
+libunwind can be controlled without automagic linkage.
+
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -391,6 +391,9 @@
+ 
+ IF(Unwind_FOUND)
+   list(INSERT CORE_LIBRARIES 0 unwind::unwind)
++  add_compile_definitions(USE_UNWIND=1)
++ELSE()
++  add_compile_definitions(USE_UNWIND=0)
+ ENDIF()
+ 
+ IF(USE_SENTRY)
+--- a/external_imported/UniversalStacktrace/ust/ust_unix.hpp
++++ b/external_imported/UniversalStacktrace/ust/ust_unix.hpp
+@@ -15,6 +15,13 @@
+ #if defined(__ANDROID__)
+ // Android's bionic libc does not provide execinfo or libunwind
+ #define USE_UNWIND 0
++#elif defined(USE_UNWIND)
++#if USE_UNWIND
++#define UNW_LOCAL_ONLY
++#include <libunwind.h>
++#else
++#include <execinfo.h>
++#endif
+ #elif __has_include(<libunwind.h>)
+ #define USE_UNWIND (1)
+ #define UNW_LOCAL_ONLY

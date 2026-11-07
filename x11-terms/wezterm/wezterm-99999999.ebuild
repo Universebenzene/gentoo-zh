@@ -23,8 +23,8 @@ IUSE="wayland"
 RESTRICT="test" # tests require network
 
 DEPEND="
-	dev-libs/libgit2
-	dev-libs/openssl
+	dev-libs/libgit2:=
+	dev-libs/openssl:=
 	media-fonts/jetbrains-mono
 	media-fonts/noto
 	media-fonts/noto-emoji
@@ -33,9 +33,10 @@ DEPEND="
 	media-libs/libpng
 	media-libs/mesa
 	sys-apps/dbus
-	virtual/zlib
+	virtual/zlib:=
 	x11-libs/cairo[X]
 	x11-libs/libX11
+	x11-libs/libxcb:=
 	x11-libs/libxkbcommon[X,wayland?]
 	x11-libs/xcb-imdkit
 	x11-libs/xcb-util
@@ -54,6 +55,11 @@ BDEPEND="
 "
 
 QA_FLAGS_IGNORED="usr/bin/.*"
+
+PATCHES=(
+	"${FILESDIR}"/${PN}-mux-server-closed-client-channels.patch
+	"${FILESDIR}"/${PN}-wayland-closed-windows.patch
+)
 
 src_unpack() {
 	git-r3_src_unpack

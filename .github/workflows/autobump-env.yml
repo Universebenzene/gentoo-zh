@@ -1,5 +1,4 @@
-# The bump workers' environment image, tagged by ref and date: one build a day, and a
-# branch test never overwrites what the scheduled runs pull.
+# Tagged by ref so a branch test never overwrites the image the scheduled runs pull.
 
 name: autobump-env
 
@@ -38,31 +37,31 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 120
     outputs:
-      image: ${{ steps.image.outputs.ref }}
+      image: ${{ steps.existing.outputs.ref }}
 
     steps:
     - name: checkout
       uses: actions/checkout@v7
 
     # ghcr takes neither an uppercase name nor the characters a git ref may carry
-    - name: image name
+    - name: set image name
       id: image
       env:
-        OWNER: ${{ github.repository_owner }}
         REF: ${{ github.ref_name }}
         DAY: ${{ inputs.date }}
       run: |
         case "$DAY" in ''|[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]) ;;
           *) echo "date must be YYYYMMDD: $DAY" >&2; exit 1;; esac
-        owner=$(printf '%s' "$OWNER" | tr 'A-Z' 'a-z')
+        owner=${GITHUB_REPOSITORY_OWNER,,}
         tag=$(printf '%s' "$REF" | tr 'A-Z' 'a-z' | tr -c 'a-z0-9._-' '-')
         echo "ref=ghcr.io/$owner/autobump-env:$tag-${DAY:-$(date -u +%Y%m%d)}" >> "$GITHUB_OUTPUT"
+        echo "base=ghcr.io/$owner/stage3:amd64-desktop-openrc" >> "$GITHUB_OUTPUT"
 
     - name: log in to ghcr
       uses: docker/login-action@v4
       with:
         registry: ghcr.io
-        username: gentoo-zh-bot
+        username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
     - name: look for the image
@@ -70,7 +69,9 @@ jobs:
       env:
         REF: ${{ steps.image.outputs.ref }}
         DAY: ${{ inputs.date }}
+        FORCE: ${{ inputs.force }}
       run: |
+        use=$REF
         # stdout is the manifest, stderr is why it is not there - keep the second
         if docker manifest inspect "$REF" > /dev/null; then
           echo "exists=true" >> "$GITHUB_OUTPUT"
@@ -78,15 +79,27 @@ jobs:
           # an earlier day cannot be rebuilt: its tree and binpkgs are gone
           echo "no image for $DAY: $REF" >&2
           exit 1
+        elif [ "$FORCE" != true ]; then
+          # daily builds today's image; a bump run before it, or after it failed, takes the newest kept one
+          for back in 1 2; do
+            old=${REF%-*}-$(date -u -d "$back days ago" +%Y%m%d)
+            if docker manifest inspect "$old" > /dev/null; then
+              use=$old
+              echo "exists=true" >> "$GITHUB_OUTPUT"
+              break
+            fi
+          done
         fi
+        echo "ref=$use" >> "$GITHUB_OUTPUT"
 
     # no build cache: the point of rebuilding is to pick up today's tree and binpkgs
     - name: build and push
       id: build
-      if: ${{ inputs.date == '' && (inputs.force || steps.existing.outputs.exists != 'true') }}
+      if: inputs.date == '' && (inputs.force || steps.existing.outputs.exists != 'true')
       uses: docker/build-push-action@v7
       with:
         context: .github/autobump-env
+        build-args: BASE=${{ steps.image.outputs.base }}
         push: true
         no-cache: true
         # no attestation manifests: the cleanup below deletes untagged versions

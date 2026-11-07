@@ -18,6 +18,11 @@ HOMEPAGE="
 
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="~amd64"
+KEYWORDS="~amd64 ~arm64"
 
 RESTRICT="test"
+
+src_prepare() {
+	distutils-r1_src_prepare
+	sed -i -e 's/^license_files = file: /license_files = /' -e '/^universal = 1$/d' setup.cfg || die
+}

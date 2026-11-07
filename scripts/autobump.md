@@ -17,6 +17,11 @@ Bumps the new versions nvchecker reports.
 Step 2 has three outcomes:
 
 * **mechanical** — version change only and emerge passed, so it opens a PR.
+  The PR is a draft when only amd64 was built, when the GUI launch probe failed, or
+  when the engine accepted a difference it would otherwise escalate on: a raised Go or
+  Rust floor, a missing toolchain atom it could only note, or files the new payload
+  dropped that nothing names and that the install and smoke test did not miss. The body
+  lists each accepted difference, and the issue comment says why the PR is a draft.
 * **escalate** — major version jump, changed dependencies, a `files/` patch to
   re-verify, or a distfile upstream answers with 404 or 403, because the file is not
   there and a retry cannot fix that. It comments the evidence on the issue, uploads
@@ -157,7 +162,8 @@ tag, the tag without a leading `v`, or `${P}` as a whole word. A producer starte
 
 Before planning the shards, autobump checks the bundles of every open nvchecker issue whose
 package has `deps` or `bundle`, opted in or not. Only a ready target reaches a bump shard,
-where the engine reads the snapshot with `--bundle-status`.
+where the engine reads the snapshot with `--bundle-status`. A package that is not opted in only gets
+its bundle prepared: the issue comment says to bump it by hand once the bundle is released.
 
 * **ready**: the release exists and no producer run for the tag is queued or running.
 * **pending**: a producer run is queued or running, or the plan dispatched the workflow because
@@ -216,8 +222,7 @@ gh workflow run autobump.yml --repo gentoo-zh/overlay -f issues="11855 11860" -f
 
 ## Running it
 
-It runs 60 seconds after each nvchecker run on `master` finishes, so GitHub search lists
-the new issues, and daily at 11:00 UTC as a backstop. Because it works from the open
+It runs after each nvchecker run on `master` finishes, and daily at 11:00 UTC as a backstop. Because it works from the open
 issues, a failed nvchecker run still starts it; only a cancelled one does not.
 
 ### Web
@@ -245,9 +250,10 @@ Both take the same inputs; `issues` accepts digits and spaces only.
 The workers run in an image built once a day (`autobump-env`). `rebuild_env` forces a fresh
 one; `env_date` runs on an earlier day's image, of which the last three are kept.
 
-`limit` caps engine attempts on work the run picks itself; it defaults to 0, which runs the
-whole queue, and issue numbers given by hand are always all attempted. The planner resolves the queue against the cached state and assigns those attempts to
-disjoint shards; skips are free.
+The workflow gives each package a fresh container, with at most eight jobs running at once;
+the remaining jobs wait for a slot. `limit` caps automatically selected attempts; 0 adds no cap.
+Manual issue lists ignore `limit`, but both modes stop at GitHub's matrix limit of 256 jobs.
+Skips do not count toward this limit. Any excess eligible packages remain for a later run.
 
 A run has three phases: plan, at most eight bump workers in parallel, and collect. Each worker
 lasts at most 360 minutes and GitHub cancels it there. Each timed operation - `ebuild install`, `emerge`,

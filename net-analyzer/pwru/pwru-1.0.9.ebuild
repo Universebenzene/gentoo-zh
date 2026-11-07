@@ -3,7 +3,7 @@
 
 EAPI=8
 
-inherit linux-info
+inherit go-module linux-info
 
 DESCRIPTION="eBPF-based Linux kernel networking debugger"
 HOMEPAGE="https://github.com/cilium/pwru"
@@ -12,13 +12,17 @@ SRC_URI="
 "
 S="${WORKDIR}/${P}"
 
-LICENSE="Apache-2.0"
+LICENSE="Apache-2.0 || ( GPL-2 BSD-2 )"
 SLOT="0"
 KEYWORDS="-* ~amd64 ~arm64"
 MINKV="5.18"
 RESTRICT="strip"
 
-BDEPEND="llvm-core/clang"
+BDEPEND="
+	app-alternatives/yacc
+	llvm-core/clang
+	sys-devel/flex
+"
 RDEPEND="!net-analyzer/pwru-bin"
 
 pkg_pretend() {

@@ -46,7 +46,12 @@ for n in "${issue_numbers[@]}"; do
     trial_comment "$n" "**autobump-trial** build-testing \`$pkg\` → \`$ver\` (not opted in)… · [run]($RUN_URL)"
 
     args=()
-    if flags=$(python3 scripts/autobump-args.py "$pkg") && [ -n "$flags" ]; then
+    if ! flags=$(python3 scripts/autobump-args.py "$pkg"); then
+        printf "| #%s | \`%s\` | %s | - | SKIP — overlay.toml entry refused |\n" "$n" "$pkg" "$ver" >> "$GITHUB_STEP_SUMMARY"
+        trial_comment "$n" "**autobump-trial** \`$pkg\` → \`$ver\`: **SKIP** — overlay.toml entry refused. · [log]($RUN_URL)"
+        continue
+    fi
+    if [ -n "$flags" ]; then
         mapfile -t args <<< "$flags"
     fi
     bundle=''
@@ -79,10 +84,6 @@ for n in "${issue_numbers[@]}"; do
         2)
             res='DEFER — transient (fetch / network / dep-gap / timeout / precondition)'
             tres='**DEFER** — transient (fetch / dep-gap / timeout).'
-            ;;
-        130)
-            res='interrupted (signal)'
-            tres="unexpected exit $ec. · [log]($RUN_URL)"
             ;;
         *)
             res="unexpected exit $ec"

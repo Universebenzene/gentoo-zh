@@ -15,16 +15,24 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number }}${{ github.event.action == 'labeled' && github.event.label.name != 'tatt' && '-label' || '' }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
   scan:
-    name: scan changed ebuilds
+    name: select tatt targets
     if: github.event.action != 'labeled' || github.event.label.name == 'tatt'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
     outputs:
       targets: ${{ steps.targets.outputs.targets }}
+      image: ${{ steps.image.outputs.ref }}
 
     steps:
-    - uses: actions/checkout@v7
+    - name: checkout
+      uses: actions/checkout@v7
       with:
         repository: ${{ github.event.pull_request.head.repo.full_name }}
         ref: ${{ github.event.pull_request.head.sha }}
@@ -38,28 +46,38 @@ jobs:
         LABELED: ${{ contains(github.event.pull_request.labels.*.name, 'tatt') }}
       run: |
         targets=$(scripts/tatt-targets.sh "$PR" "$BASE" "$LABELED")
-        echo "targets: $targets"
         echo "targets=$targets" >> "$GITHUB_OUTPUT"
 
+    - name: set image name
+      id: image
+      run: echo "ref=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/stage3:amd64-desktop-systemd" >> "$GITHUB_OUTPUT"
+
   tatt:
-    name: tatt ${{ matrix.target.atom }}
+    # a skipped job never expands its matrix, so a name built from it shows the raw expression
+    name: tatt
     needs: scan
-    if: ${{ fromJson(needs.scan.outputs.targets)[0] != null }}
+    if: fromJSON(needs.scan.outputs.targets)[0] != null
     strategy:
       fail-fast: false
       matrix:
         target: ${{ fromJSON(needs.scan.outputs.targets) }}
 
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
     container:
-      image: gentoo/stage3:amd64-desktop-systemd
+      image: ${{ needs.scan.outputs.image }}
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
       options: --privileged
     env:
       ATOM: ${{ matrix.target.atom }}
       KEYWORD: ${{ matrix.target.keyword }}
 
     steps:
-    - name: fetch repo
+    - name: checkout
       uses: actions/checkout@v7
       with:
         repository: ${{ github.event.pull_request.head.repo.full_name }}
@@ -89,15 +107,11 @@ jobs:
         ignoreprefix=$(scripts/tatt-targets.sh --ignore-prefixes)
         EOF
 
-    - name: update perl to the binhost version
-      run: |
-        if scripts/needs-perl-update.sh "$ATOM"; then
-          FEATURES="getbinpkg" emerge --oneshot --update --quiet dev-lang/perl
-          FEATURES="getbinpkg" perl-cleaner --all -- --quiet --jobs 4
-        fi
-
     - name: emerge --onlydeps
-      run: FEATURES="getbinpkg" emerge --onlydeps --jobs 2 --quiet --autounmask=y --autounmask-write=y --autounmask-continue=y "$ATOM"
+      # a binpkg of the target would drop its build-time deps here, and tatt builds it from the ebuild
+      run: |
+        package=$(portageq pquery --no-filters -n "$ATOM")
+        FEATURES="getbinpkg" emerge --onlydeps --usepkg-exclude "$package" --jobs 2 --quiet --autounmask=y --autounmask-write=y --autounmask-continue=y "$ATOM"
 
     - name: run tatt
       run: |
@@ -108,7 +122,7 @@ jobs:
         script -qec "bash ./*-useflags.sh" /dev/null
 
     - name: report
-      if: ${{ always() }}
+      if: always()
       run: |
         {
             echo "### tatt $ATOM"

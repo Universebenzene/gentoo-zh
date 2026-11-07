@@ -2,85 +2,116 @@
 # usage: pkgcheck-comment.sh <report-directory>
 set -euo pipefail
 MARKER='<!-- pkgcheck-report -->'
+MAX_LINES=30
 report_dir=${1:?report-directory}
+findings=$report_dir/findings.json
 body_file=$(mktemp)
 trap 'rm -f "$body_file"' EXIT
 
-# commits/{sha}/pulls returns nothing for a fork PR; the artifact is not trusted
-pulls=$(gh api "repos/$REPO/pulls?state=open&per_page=100" --paginate --slurp)
-matches=$(jq -r --arg head_sha "$HEAD_SHA" '
-    .[][] | select(.head.sha == $head_sha) | .number
-' <<< "$pulls")
-pr=${matches%%$'\n'*}
+pr=$(scripts/pr-at-commit.sh "$GITHUB_REPOSITORY" "$HEAD_SHA")
 if [ -z "$pr" ]; then
     echo 'no open pull request at this commit'
     exit 0
 fi
 echo "pull request #${pr}"
 
+if [ ! -f "$findings" ]; then
+    echo 'the report predates findings.json'
+    exit 0
+fi
+
+# atom: stdin cut to 200 atom characters. The pull request's run wrote the report, so
+# the commit and package names go through it.
+atom() {
+    head -c 200 | tr -cd '[:alnum:]/._+=~@:-'
+}
+
+# list <new> <level>...: one line per finding, existing ones prefixed with their level
+# and control characters turned into spaces, so a finding cannot leave its code block
+list() {
+    jq -r --argjson new "$1" '
+        .[] | select(.new == $new and (.level | IN($ARGS.positional[])))
+        | (if $new then "" else "\(.level): " end) + "\(.target): \(.keyword): \(.desc)"
+        | gsub("[[:cntrl:]]"; " ") | .[:300]
+    ' "$findings" --args "${@:2}"
+}
+
+# block <title> <collapsed> <lines>
+block() {
+    local title=$1 collapsed=$2 lines=$3 n
+    n=$(grep -c . <<< "$lines" || true)
+    [ "$n" -gt 0 ] || return 0
+    echo
+    if [ "$collapsed" = yes ]; then
+        echo "<details><summary>${title} (${n})</summary>"
+    else
+        echo "### ${title} (${n})"
+    fi
+    echo
+    echo '``````'
+    head -n "$MAX_LINES" <<< "$lines"
+    echo '``````'
+    if [ "$n" -gt "$MAX_LINES" ]; then
+        echo
+        echo "$(( n - MAX_LINES )) more in the [run log](${RUN_URL})."
+    fi
+    if [ "$collapsed" = yes ]; then
+        echo
+        echo '</details>'
+    fi
+}
+
 count=$(wc -l < "$report_dir"/packages)
 if [ "$count" -eq 0 ]; then
+    {
+        echo '## Pull request pkgcheck report'
+        echo
+        echo "*Newest commit scanned*: \`$(atom < "$report_dir"/commit)\`"
+        echo '*Status*: :white_check_mark: no packages touched'
+    } > "$body_file"
+    scripts/upsert-comment-section.sh "$GITHUB_REPOSITORY" "$pr" "$MARKER" pkgcheck "$body_file"
+    # emerge-on-pr skips a pull request that only touches .github, so drop its report here
+    : > "$body_file"
+    scripts/upsert-comment-section.sh "$GITHUB_REPOSITORY" "$pr" "$MARKER" elog "$body_file"
     echo 'no packages touched'
     exit 0
 fi
-commit=$(cat "$report_dir"/commit)
-# findings are indented under a package name, package names are not
-new=$(grep -c '^  ' "$report_dir"/new.txt || true)
-existing=$(( $(grep -c '^  ' "$report_dir"/report.txt || true) - new ))
-
-issue_word=issues
-if [ "$existing" -eq 1 ]; then
-    issue_word=issue
-fi
+errors=$(list true error)
+warnings=$(list true warning)
+minor=$(list true style info)
 
 {
     echo '## Pull request pkgcheck report'
     echo
-    echo "*Newest commit scanned*: \`${commit}\`"
+    echo "*Newest commit scanned*: \`$(atom < "$report_dir"/commit)\`"
     if [ "${count}" -le 10 ]; then
         packages=()
         while IFS= read -r package; do
-            packages+=("\`$package\`")
+            packages+=("\`$(atom <<< "$package")\`")
         done < "$report_dir/packages"
         echo "*Packages scanned*: ${packages[*]}"
     else
         echo "*Packages scanned*: ${count}"
     fi
-    if [ "${new}" -eq 0 ]; then
-        echo '*Status*: :white_check_mark: good'
+    if [ -f "$report_dir"/incomplete ]; then
+        echo "*Status*: :x: the scan did not finish, see the [run](${RUN_URL})"
+    elif [ -z "$errors$warnings$minor" ]; then
+        echo '*Status*: :white_check_mark: no new findings'
+        block 'Existing findings in these packages' yes "$(list false error warning style info)"
     else
-        echo '*Status*: :warning: **new issues**'
-        echo
-        if [ "${new}" -gt 10 ]; then
-            echo "<details><summary>New issues caused by PR (${new})</summary>"
-            echo
-            close='</details>'
+        if [ -n "$errors" ]; then
+            echo '*Status*: :x: **new errors**'
         else
-            echo 'New issues caused by PR:'
-            echo
-            close=''
+            echo '*Status*: :warning: **new issues**'
         fi
-        echo '``````'
-        if [ "$(wc -c < "$report_dir"/new.txt)" -le 55000 ]; then
-            cat "$report_dir"/new.txt
-        else
-            head -c 55000 "$report_dir"/new.txt | head -n -1
-            echo '[truncated, see the full report]'
-        fi
-        echo '``````'
-        if [ -n "$close" ]; then
-            echo
-            echo "$close"
-        fi
-    fi
-    if [ "${existing}" -gt 0 ]; then
         echo
-        echo "There are ${existing} existing ${issue_word} in these packages. Please look"
-        echo "into the [full report](${RUN_URL}) to make sure none of them affect your change."
+        echo "This pull request adds these findings. Errors fail the \`report\` check."
+        block 'New errors' no "$errors"
+        block 'New warnings' no "$warnings"
+        block 'New style and info findings' yes "$minor"
+        block 'Existing findings in these packages' yes "$(list false error warning style info)"
     fi
-    echo
-    echo "${MARKER}"
 } > "$body_file"
 
-scripts/upsert-comment.sh "$REPO" "$pr" "$MARKER" "$body_file"
+scripts/upsert-comment-section.sh "$GITHUB_REPOSITORY" "$pr" "$MARKER" pkgcheck "$body_file"
 echo "commented on #${pr}"

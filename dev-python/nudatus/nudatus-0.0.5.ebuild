@@ -17,7 +17,7 @@ SRC_URI="https://github.com/ZanderBrown/nudatus/archive/refs/tags/${PV}.tar.gz -
 
 LICENSE="MIT"
 SLOT="0"
-KEYWORDS="~amd64"
+KEYWORDS="~amd64 ~arm64"
 
 PATCHES=(
 	"${FILESDIR}/${P}-python3.12-fix.patch"
@@ -25,3 +25,8 @@ PATCHES=(
 
 EPYTEST_PLUGINS=()
 distutils_enable_tests pytest
+
+src_prepare() {
+	distutils-r1_src_prepare
+	sed -i '/License ::/d' setup.py || die
+}

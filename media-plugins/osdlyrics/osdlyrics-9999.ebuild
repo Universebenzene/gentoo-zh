@@ -9,7 +9,7 @@ inherit python-r1 autotools optfeature xdg
 DESCRIPTION="Standalone lyrics fetcher/displayer (windowed and OSD mode)"
 HOMEPAGE="https://github.com/osdlyrics/osdlyrics"
 
-LICENSE="GPL-3"
+LICENSE="GPL-3+"
 SLOT="0"
 
 if [[ "${PV}" == 9999 ]]; then
@@ -26,7 +26,12 @@ REQUIRED_USE="${PYTHON_REQUIRED_USE}"
 RDEPEND="
 	${PYTHON_DEPS}
 	x11-libs/libnotify
-	x11-libs/gtk+:2
+	x11-libs/gtk+:3[X]
+	dev-libs/glib:2
+	x11-libs/cairo
+	x11-libs/gdk-pixbuf:2
+	x11-libs/libX11
+	x11-libs/pango
 	x11-themes/hicolor-icon-theme
 	dev-libs/dbus-glib
 	dev-db/sqlite

@@ -23,8 +23,8 @@ import time
 import tomllib
 
 
-STATUS_MARKER = "<!-- autobump-status -->"
 # One hidden marker keeps each issue editable instead of creating an unbounded status-comment stream.
+STATUS_MARKER = "<!-- autobump-status -->"
 SPACE = " \t\r\n\v\f"
 
 
@@ -49,7 +49,7 @@ class Arguments:
 class Settings:
     repo: str
     upstream_repo: str
-    judge: str
+    assignee: str
     done_ledger: Path | None
     attempts_ledger: Path | None
     bundles_ledger: Path | None
@@ -71,6 +71,7 @@ class Settings:
     bundles: Path | None
     bundles_delta: Path | None
     bundles_only: bool
+    waits: list[dict]
 
 
 # A build log carries whatever bytes upstream wrote; strict decoding loses the bump over one.
@@ -156,7 +157,7 @@ def attempt_count(settings, package, version):
     return matching_ledger_count(settings.attempts_ledger, package, version)
 
 
-# A dangling value flag keeps its current value, matching the shell this replaced.
+# A dangling value flag keeps its current value.
 VALUE_FLAGS = {
     "--limit": "limit",
     "--plan": "plan_shards",
@@ -295,14 +296,13 @@ def short_status_reason(reason):
     return reason
 
 
-# Seconds between status-lookup retries; the tests drive the failure path and do not wait.
-STATUS_LOOKUP_BACKOFF = float(os.environ.get("AUTOBUMP_STATUS_BACKOFF", "3"))
+STATUS_LOOKUP_BACKOFF = 3
 
 
 def find_status_comment_id(issue, upstream_repo):
     # A failed FIND must not fall through to CREATE: a transient API error would duplicate the status comment.
     status_comment_id_filter = (
-        "map(select(.body|contains(\"<!-- autobump-status -->\")))|.[0].id // empty"
+        "map(select(.user.type == \"Bot\" and (.body|contains(\"<!-- autobump-status -->\"))))|.[0].id // empty"
     )
     for _ in range(3):
         status, comment_id = command_output(
@@ -317,7 +317,8 @@ def find_status_comment_id(issue, upstream_repo):
             stderr=subprocess.DEVNULL,
         )
         if status == 0:
-            return comment_id
+            # --jq runs per page, so each page with a match prints an id
+            return comment_id.partition("\n")[0]
         time.sleep(STATUS_LOOKUP_BACKOFF)
     return None
 
@@ -372,6 +373,19 @@ def status_comment(issue, body, *, comment, footer, upstream_repo, status_commen
     status_comment_failed.add(issue)
 
 
+def assign_issue(settings, issue, add):
+    if not (settings.comment and settings.assignee):
+        return
+    flag = "--add-assignee" if add else "--remove-assignee"
+    command = ["gh", "issue", "edit", issue, "--repo", settings.upstream_repo, flag, settings.assignee]
+    for _ in range(3):
+        status, _ = command_output(command, stderr=subprocess.DEVNULL)
+        if status == 0:
+            return
+        time.sleep(3)
+    print(f"warning: could not {'assign' if add else 'unassign'} {settings.assignee} on #{issue}", file=sys.stderr)
+
+
 # GitHub refuses these in an artifact path, and portage names an elog
 # "<cat>:<pn>-<ver>:<timestamp>.log".
 UPLOADABLE_NAME = re.compile(r'["<>|*?:\r\n]')
@@ -419,14 +433,6 @@ def evidence_directory_from_output(text):
     return evidence_directories[-1] if evidence_directories else ""
 
 
-def current_version(text):
-    for line in text.split("\n"):
-        match = re.match(r"^>> current: ([^ ]+) +-> +target:.*", line)
-        if match:
-            return match.group(1)
-    return ""
-
-
 def evidence_reasons(evidence):
     try:
         with (evidence / "escalations.txt").open() as f:
@@ -445,13 +451,6 @@ def human_verdict(evidence):
         "deps_changed": [],
         "issue_comment": f"not mechanically safe: {reason}",
     }
-
-
-def parse_verdict(verdict_json):
-    try:
-        return json.loads(verdict_json)
-    except json.JSONDecodeError:
-        return {}
 
 
 def last_clear_reason(text):
@@ -485,12 +484,17 @@ def evidence_file_excerpt(path):
     return "\n".join(kept), len(kept), len(lines)
 
 
+# Every file of both unpacked trees, tens of thousands of lines that name no failure;
+# tree-added.txt and tree-removed.txt carry what changed between them.
+TREE_LISTINGS = {"tree-new.txt", "tree-old.txt"}
+
+
 def evidence_excerpt(evidence):
     # Every file the engine wrote, not a summary of them: the reason line says what tripped,
     # these say what the tools actually printed. Long files are cut, never paraphrased, and
     # the run artifact holds them whole.
     try:
-        paths = sorted(path for path in evidence.iterdir() if path.is_file())
+        paths = sorted(path for path in evidence.iterdir() if path.is_file() and path.name not in TREE_LISTINGS)
     except OSError:
         return ""
     # the reason first, then the diffs and scan results, then the logs: a log is the bulkiest
@@ -519,8 +523,8 @@ def read_settings(argv):
     if not repo:
         _, repo = command_output(["git", "rev-parse", "--show-toplevel"], stderr=subprocess.DEVNULL)
     upstream_repo = os.environ.get("AUTOBUMP_UPSTREAM_REPO") or "gentoo-zh/overlay"
-    # An unset judge sends each escalation to a human; configure one only when its semantic judgment merits a call.
-    judge = os.environ.get("AUTOBUMP_JUDGE", "")
+    # the account that opens the nvchecker issues; an empty value assigns nobody
+    assignee = os.environ.get("AUTOBUMP_ASSIGNEE", "gentoo-zh-bot")
     # where escalation evidence is kept for upload; unset means the run keeps none
     evidence_dir = os.environ.get("AUTOBUMP_EVIDENCE_DIR")
     state_home = os.environ.get("XDG_STATE_HOME") or f"{os.environ.get('HOME', '')}/.local/state"
@@ -556,7 +560,7 @@ def read_settings(argv):
     return Settings(
         repo=repo,
         upstream_repo=upstream_repo,
-        judge=judge,
+        assignee=assignee,
         done_ledger=done_ledger if arguments.worker is None else None,
         attempts_ledger=attempts_ledger if arguments.worker is None else None,
         bundles_ledger=bundles_ledger if arguments.worker is None else None,
@@ -578,6 +582,7 @@ def read_settings(argv):
         bundles=Path(arguments.bundles) if arguments.bundles is not None else None,
         bundles_delta=Path(arguments.bundles_delta) if arguments.bundles_delta is not None else None,
         bundles_only=arguments.bundles_only,
+        waits=[],
     )
 
 
@@ -594,16 +599,14 @@ def select_issues(settings):
             "list",
             "--repo",
             settings.upstream_repo,
-            "--search",
-            "[nvchecker] in:title",
             "--state",
             "open",
             "--limit",
-            str((run_limit(settings) or 20) * 10),
+            "1000",
             "--json",
-            "number",
+            "number,title",
             "--jq",
-            ".[].number",
+            '.[] | select(.title | startswith("[nvchecker]")) | .number',
         ]
     )
     if status != 0:
@@ -617,13 +620,11 @@ def select_issues(settings):
 def copy_tools():
     _, original_branch = command_output(["git", "branch", "--show-current"])
     tools = Path(tempfile.mkdtemp(prefix="autobump-tools-", dir="/tmp"))
-    shutil.copy2("scripts/autobump-judge.sh", tools / "autobump-judge.sh")
     shutil.copy2("scripts/autobump-args.py", tools / "autobump-args.py")
     return tools, original_branch
 
 
 def engine_command(settings):
-    # autobump-rb is the single engine. There is no in-tree fallback to silently use.
     if not settings.engine:
         print("AUTOBUMP_ENGINE: set AUTOBUMP_ENGINE, e.g. ruby autobump-rb/bin/autobump", file=sys.stderr)
         return None
@@ -704,16 +705,21 @@ def bundle_links(settings, package, bundles):
     return " · ".join(dict.fromkeys(links))
 
 
-def bundle_status_body(settings, package, version, reason, links, *, escalate, detail=""):
+def bundle_status_body(settings, package, version, reason, links, *, escalate, detail="", opted_in=True):
+    # a package without the autobump key only gets its bundle prepared; the bump stays manual
+    manual = f"`{package}` is not opted in to autobump, so bump it by hand once the bundle is"
     if escalate:
+        next_step = ("Re-run autobump with `retry` for this issue once it is fixed." if opted_in
+                     else f"{manual} fixed.")
         return (
             f"**autobump** can't get the vendor bundle for `{package}` → `{version}`{detail}: **{reason}**. "
-            f"Needs a maintainer: {links}. Re-run autobump with `retry` for this issue once it is fixed."
+            f"Needs a maintainer: {links}. {next_step}"
             f"{run_link(settings.upstream_repo, 'log')}"
         )
+    next_step = "Will retry automatically." if opted_in else f"{manual} released."
     return (
         f"**autobump** is waiting for the vendor bundle of `{package}` → `{version}`{detail}: {reason}. "
-        f"{links}. Will retry automatically.{run_link(settings.upstream_repo)}"
+        f"{links}. {next_step}{run_link(settings.upstream_repo)}"
     )
 
 
@@ -755,14 +761,14 @@ def run_bundle_controller(settings, candidates):
         return {}, message
 
 
-def announce_bundle(settings, target, status_comment_failed):
+def announce_bundle(settings, target, status_comment_failed, opted_in):
     """Comment on what changed this run: a dispatch, or the escalation to a maintainer."""
     if not target.get("escalated_now") and not target.get("dispatched"):
         return
     package = target["package"]
     body = bundle_status_body(settings, package, target["version"], short_status_reason(target["reason"]),
                               bundle_links(settings, package, target["bundles"]),
-                              escalate=target.get("escalated_now"))
+                              escalate=target.get("escalated_now"), opted_in=opted_in)
     status_comment(target["issue"], body, comment=settings.comment, footer="",
                    upstream_repo=settings.upstream_repo, status_comment_failed=status_comment_failed)
 
@@ -790,10 +796,11 @@ def plan_issues(settings, issues, apply_run_limit):
     if settings.bundles is not None:
         with_bundles = bundle_packages()
         snapshot, bundle_error = run_bundle_controller(
-            settings, [c for c in candidates if c["package"] in with_bundles])
+            settings, [c for c in candidates if c["package"] in with_bundles or c["opted_in"]])
+        opted = {c["package"] for c in candidates if c["opted_in"]}
         for target in snapshot.values():
             if target.get("issue"):
-                announce_bundle(settings, target, status_comment_failed)
+                announce_bundle(settings, target, status_comment_failed, target["package"] in opted)
 
     items = []
     planned = {}
@@ -832,8 +839,10 @@ def plan_issues(settings, issues, apply_run_limit):
             results[issue] = "skip (bundles_only run)"
             continue
 
-        cap = run_limit(settings)
-        if apply_run_limit and cap is not None and attempts >= cap:
+        # GitHub matrices allow at most 256 jobs, including named issues.
+        cap = run_limit(settings) if apply_run_limit else None
+        cap = min(cap or 256, 256)
+        if attempts >= cap:
             results[issue] = f"skip (per-run attempt limit {cap} reached)"
             continue
 
@@ -890,6 +899,9 @@ def record_bumped(settings, issue, package, version, engine_output, footer, stat
     result = f"bumped{' + PR' if settings.pr else ''}"
     urls = re.findall(r"https://github\.com/[^ \n]+/pull/[0-9]+", engine_output)
     opened_pr = f" — opened {urls[-1]}" if urls else ""
+    draft = re.search(r"^ok PR opened \(draft: (.+)\)$", engine_output, re.M)
+    if draft:
+        opened_pr += f" as a draft because {draft.group(1)}"
     status_comment(
         issue,
         f"**autobump** bumped `{package}` → `{version}`{opened_pr}{run_link(settings.upstream_repo)}",
@@ -909,54 +921,6 @@ def defer_unparseable_evidence(settings, package, version):
         record_ledger(settings, "done", package, version, "deferred")
         return f"deferred (exit 3, evidence dir unparseable after {tries + 1} tries)"
     return f"exit 3 but evidence dir not found (try {tries + 1}), retrying"
-
-
-def escalation_verdict(settings, tools, evidence, package, current, version):
-    if settings.judge:
-        _, verdict_json = command_output(
-            ["bash", str(tools / "autobump-judge.sh"), str(evidence), package, current or "?", version]
-        )
-        print(f"judge: {verdict_json}")
-        return parse_verdict(verdict_json)
-
-    return human_verdict(evidence)
-
-
-def retry_accepted_escalation(
-    settings, engine, issue, package, version, args, footer, status_comment_failed
-):
-    retry_status, retry_output = command_output_with_stderr(
-        engine + [issue, "--accept-surface", "--accept-payload", *args] + ([settings.pr] if settings.pr else [])
-    )
-    print(retry_output)
-    if retry_status == 0:
-        record_ledger(settings, "done", package, version, "bumped-after-judge")
-        return "bumped (judge accepted surface delta)"
-    if retry_status != 2:
-        record_ledger(settings, "done", package, version, "deferred")
-        return f"deferred (retry failed, exit {retry_status})"
-
-    # Share ATTEMPTS with judge retries so an escalation → judge → timeout loop ends without judging every sweep.
-    tries = attempt_count(settings, package, version)
-    record_ledger(settings, "attempts", package, version)
-    if tries < 2:
-        return f"judge-retry deferred transiently (try {tries + 1})"
-
-    record_ledger(settings, "done", package, version, "deferred-transient")
-    keep_evidence(settings, Path(evidence_directory_from_output(retry_output)), package, version)
-    status_comment(
-        issue,
-        (
-            f"**autobump** accepted the surface delta for `{package}` → `{version}` "
-            f"but the retry hit transient failures {tries + 1} times. "
-            f"A maintainer may need to bump it by hand.{run_link(settings.upstream_repo)}"
-        ),
-        comment=settings.comment,
-        footer=footer,
-        upstream_repo=settings.upstream_repo,
-        status_comment_failed=status_comment_failed,
-    )
-    return f"deferred after {tries + 1} judge-retry transients"
 
 
 def record_escalation(settings, issue, package, version, evidence, verdict, engine_output, footer, status_comment_failed):
@@ -989,22 +953,14 @@ def record_escalation(settings, issue, package, version, evidence, verdict, engi
     return f"escalated: {reason}"
 
 
-def handle_escalation(
-    settings, tools, engine, issue, package, version, args, footer, engine_output, status_comment_failed
-):
+def handle_escalation(settings, issue, package, version, footer, engine_output, status_comment_failed):
     evidence_path = evidence_directory_from_output(engine_output)
     evidence = Path(evidence_path)
     if not evidence_path or not evidence.is_dir():
         return defer_unparseable_evidence(settings, package, version)
 
     keep_evidence(settings, evidence, package, version)
-    verdict = escalation_verdict(
-        settings, tools, evidence, package, current_version(engine_output), version
-    )
-    if verdict.get("verdict") == "proceed":
-        return retry_accepted_escalation(
-            settings, engine, issue, package, version, args, footer, status_comment_failed
-        )
+    verdict = human_verdict(evidence)
     return record_escalation(
         settings, issue, package, version, evidence, verdict, engine_output, footer, status_comment_failed
     )
@@ -1066,6 +1022,9 @@ def defer_transient(settings, issue, package, version, engine_output, footer, st
     record_ledger(settings, "attempts", package, version)
     reason = engine_abort_reason(engine_output)
     if tries < 2:
+        missing = re.match(r"per-version deps artifact missing \(HTTP 404\): (\S+)", reason)
+        if missing:
+            settings.waits.append({"issue": issue, "package": package, "version": version, "url": missing.group(1)})
         status_comment(
             issue,
             (
@@ -1096,11 +1055,27 @@ def defer_transient(settings, issue, package, version, engine_output, footer, st
     return f"deferred after {tries + 1} transient attempts: {reason}"
 
 
-def run_package(settings, tools, engine, issue, package, version, args, footer, attempt, status_comment_failed,
+def run_package(settings, engine, issue, package, version, args, footer, attempt, status_comment_failed,
                 bundle_observations=None, bundle_observation_limit=None):
     cap = run_limit(settings)
     counter = f"{attempt}/{cap}" if cap else str(attempt)
     print(f"==== #{issue} {package} -> {version} ({counter}) ====")
+    # Assigned while the bump runs and kept only when a PR was opened, so the issue list shows who is on it.
+    assign_issue(settings, issue, True)
+    result = None
+    try:
+        result = bump_package(
+            settings, engine, issue, package, version, args, footer, status_comment_failed,
+            bundle_observations, bundle_observation_limit,
+        )
+        return result
+    finally:
+        if not (settings.pr and result and result.startswith("bumped")):
+            assign_issue(settings, issue, False)
+
+
+def bump_package(settings, engine, issue, package, version, args, footer, status_comment_failed,
+                 bundle_observations, bundle_observation_limit):
     status_comment(
         issue,
         f"**autobump** is bumping `{package}` → `{version}`…{run_link(settings.upstream_repo)}",
@@ -1113,9 +1088,7 @@ def run_package(settings, tools, engine, issue, package, version, args, footer, 
     if status == 0:
         return record_bumped(settings, issue, package, version, engine_output, footer, status_comment_failed)
     if status == 3:
-        return handle_escalation(
-            settings, tools, engine, issue, package, version, args, footer, engine_output, status_comment_failed
-        )
+        return handle_escalation(settings, issue, package, version, footer, engine_output, status_comment_failed)
     bundle = engine_bundle_result(engine_output) if bundle_observations is not None else None
     if bundle and bundle.get("exit") == 2:
         return defer_bundle(
@@ -1155,10 +1128,9 @@ def run_issues(settings, issues, apply_run_limit, tools, engine):
         attempts += 1
         try:
             results[issue] = run_package(
-                settings, tools, engine, issue, package, version, args, footer, attempts, status_comment_failed
+                settings, engine, issue, package, version, args, footer, attempts, status_comment_failed
             )
-        # the shell this replaced ran without `set -e`: one broken issue never took the rest
-        # of the sweep, and the summary is the only record of a run
+        # one broken issue must not take the rest of the sweep, and the summary is the only record of a run
         except Exception as error:  # noqa: BLE001
             results[issue] = f"error ({type(error).__name__}: {error})"
     return results, status_comment_failed
@@ -1181,6 +1153,7 @@ def write_delta(settings, results, status_comment_failed):
         "bundles": settings.ledger_additions["bundles"],
         "results": results,
         "status_comment_failed": sorted(status_comment_failed),
+        "waits": settings.waits,
     }
     settings.delta.parent.mkdir(parents=True, exist_ok=True)
     settings.delta.write_text(json.dumps(delta, separators=(",", ":")) + "\n")
@@ -1189,10 +1162,9 @@ def write_delta(settings, results, status_comment_failed):
 def run_worker(settings):
     results = {}
     status_comment_failed = set()
-    tools = None
     original_branch = ""
     try:
-        tools, original_branch = copy_tools()
+        _, original_branch = command_output(["git", "branch", "--show-current"])
         engine = engine_command(settings)
         if engine is None:
             return 1
@@ -1201,7 +1173,6 @@ def run_worker(settings):
                 args = worker_engine_arguments(item)
                 results[item["issue"]] = run_package(
                     settings,
-                    tools,
                     engine,
                     item["issue"],
                     item["package"],
@@ -1215,10 +1186,10 @@ def run_worker(settings):
                 )
             except Exception as error:  # noqa: BLE001
                 results[item["issue"]] = f"error ({type(error).__name__}: {error})"
+                # the shard still succeeds so the others' deltas merge; the annotation shows on the run
+                print(f"::error title=autobump #{item['issue']}::{results[item['issue']]}")
     finally:
         restore_branch(original_branch)
-        if tools is not None:
-            shutil.rmtree(tools, ignore_errors=True)
         write_delta(settings, results, status_comment_failed)
     return 0
 

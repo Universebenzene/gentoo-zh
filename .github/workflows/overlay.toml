@@ -13,6 +13,8 @@ newver = "new_ver.json"
 
 #["acct-group/keyd"]
 
+#["acct-group/luoxu"]
+
 #["acct-group/n2n"]
 
 #["acct-group/ntpd-rs"]
@@ -20,6 +22,8 @@ newver = "new_ver.json"
 #["acct-group/ntpd-rs-observe"]
 
 #["acct-group/onepassword"]
+
+#["acct-group/onepassword-cli"]
 
 #["acct-group/onepassword-mcp"]
 
@@ -36,6 +40,8 @@ newver = "new_ver.json"
 #["acct-user/dufs"]
 
 #["acct-user/hysteria"]
+
+#["acct-user/luoxu"]
 
 #["acct-user/n2n"]
 
@@ -58,13 +64,20 @@ mirror = "https://downloads.1password.com/linux/debian/amd64"
 suite = "stable"
 # strip_release = true
 github_account = ["yangmame", "gouwazi"]
-# autobump off: install needs acct-group/onepassword, which the engine lacks
+autobump = true
+
+["app-admin/1password-cli"]
+source = "regex"
+url = "https://app-updates.agilebits.com/check/1/0/CLI2/en/2.0.0/N"
+regex = '"version":"([\d.]+)"'
+github_account = "Zakkaus"
 
 ["app-admin/chezmoi"]
 source = "github"
 github = "twpayne/chezmoi"
 use_latest_tag = true
 prefix = "v"
+autobump = true
 
 ["app-admin/chezmoi-bin"]
 source = "github"
@@ -128,6 +141,7 @@ source = "github"
 github = "igo95862/bubblejail"
 use_latest_release = true
 github_account = "gouwazi"
+autobump = true
 
 ["app-crypt/archlinux-keyring"]
 source = "gitlab"
@@ -171,13 +185,18 @@ source = "archpkg"
 archpkg = "fcitx5-pinyin-zhwiki"
 strip_release = true
 github_account = "blackteahamburger"
+autobump = true
+autobump_zhwikiv_url = "https://gitlab.archlinux.org/archlinux/packaging/packages/fcitx5-pinyin-zhwiki/-/raw/main/PKGBUILD"
+autobump_zhwikiv_regex = '(?m)^_zhwikiver=([0-9]{8})$'
 
 ["app-editors/antigravity"]
 source = "regex"
 url = "https://antigravity-hub-auto-updater-974169037036.us-central1.run.app/releases"
 regex = '"version":"([\d.]+)"'
 github_account = "zakkaus"
-# autobump off: ICON_COMMIT does not track the package version
+autobump = true
+autobump_my_build_regex = '"version":"${PV}","execution_id":"([0-9]+)"'
+autobump_static_pins = ["ICON_COMMIT"]
 
 ["app-editors/antigravity-ide"]
 source = "regex"
@@ -221,6 +240,7 @@ github = "marktext/marktext"
 use_latest_release = true
 prefix = "v"
 github_account = ["Schroedingersdoraemon", "gouwazi"]
+autobump = true
 
 # live package only
 #["app-editors/neomacs"]
@@ -264,21 +284,25 @@ github_account = "xen0n"
 ["app-emulation/liblol"]
 source = "github"
 github = "AOSC-Dev/liblol"
-use_latest_release = true
+use_max_tag = true
+include_regex = "^v\\d+\\.\\d+\\.\\d+$"
 prefix = "v"
 github_account = "xen0n"
+# autobump off: KEYWORDS="-* ~loong", so the amd64 build gate cannot install it
 
 ["app-emulation/liblol-glibc"]
 source = "github"
 github = "AOSC-Dev/liblol"
-use_latest_release = true
+use_max_tag = true
+include_regex = "^v\\d+\\.\\d+\\.\\d+$"
 prefix = "v"
 github_account = "xen0n"
 
 ["app-emulation/liblol-libxcrypt"]
 source = "github"
 github = "AOSC-Dev/liblol"
-use_latest_release = true
+use_max_tag = true
+include_regex = "^v\\d+\\.\\d+\\.\\d+$"
 prefix = "v"
 github_account = "xen0n"
 
@@ -291,6 +315,7 @@ github = "winboat-org/winboat"
 use_latest_release = true
 prefix = "v"
 github_account = "gouwazi"
+autobump = true
 
 ["app-emulation/winetricks-zh"]
 source = "github"
@@ -438,6 +463,7 @@ github = "xifan2333/fcitx5-vinput"
 use_latest_release = true
 prefix = "v"
 github_account = ["liangyongxiang", "vowstar"]
+autobump = true
 
 ["app-i18n/fcitx-zhuyin"]
 source = "github"
@@ -497,6 +523,7 @@ source = "regex"
 url = "https://www.scootersoftware.com/kb/linux_install"
 regex = 'bcompare-([\d.]+).x86_64.tar.gz'
 github_account = "gouwazi"
+autobump = true
 
 # live package only
 #["app-misc/bilihud"]
@@ -518,6 +545,7 @@ github = "farion1231/cc-switch"
 use_latest_release = true
 prefix = "v"
 github_account = ["liangyongxiang", "gouwazi"]
+autobump = true
 
 ["app-misc/cc-switch-cli"]
 source = "github"
@@ -561,12 +589,7 @@ prefix = "v"
 github_account = "liangyongxiang"
 autobump = true
 
-["app-misc/copilot"]
-source = "github"
-github = "github/copilot-cli"
-use_latest_release = true
-prefix = "v"
-autobump = true
+#["app-misc/copilot"]
 
 ["app-misc/crush"]
 source = "github"
@@ -589,6 +612,7 @@ github = "angristan/fast-resume"
 use_latest_release = true
 prefix = "v"
 github_account = "liangyongxiang"
+autobump = true
 
 ["app-misc/go-yq-bin"]
 source = "github"
@@ -621,6 +645,13 @@ use_latest_tag = true
 prefix = "v"
 github_account = "st0nie"
 
+["app-misc/magpie-bin"]
+source = "github"
+github = "yetone/magpie"
+use_latest_release = true
+prefix = "v"
+autobump = true
+
 # packaged from a pinned commit, no tag to compare
 #["app-misc/mdx_util"]
 
@@ -633,6 +664,7 @@ github_account = "liangyongxiang"
 bundle = [
   { id = "node_modules", repo = "gentoo-zh-drafts/openclaude", workflow = "node_modules.yml", tag = "v{PV}", inputs = { tag = "v{PV}" } },
 ]
+autobump = true
 
 ["app-misc/qwen-code"]
 source = "github"
@@ -820,6 +852,7 @@ source = "github"
 github = "eclipse-lemminx/lemminx"
 use_latest_tag = true
 github_account = ["blackteahamburger", "gouwazi"]
+autobump = true
 
 ["app-text/readest-bin"]
 source = "github"
@@ -869,6 +902,7 @@ github = "Neargye/nameof"
 use_latest_release = true
 prefix = "v"
 github_account = ["CHN-beta", "gouwazi"]
+autobump = true
 
 ["dev-cpp/reproc"]
 source = "github"
@@ -884,6 +918,12 @@ use_latest_release = true
 prefix = "v"
 github_account = ["CHN-beta", "gouwazi"]
 
+["dev-db/pgroonga"]
+source = "github"
+github = "pgroonga/pgroonga"
+use_latest_release = true
+github_account = ["liangyongxiang"]
+
 ["dev-debug/lldb-mi"]
 source = "github"
 github = "lldb-tools/lldb-mi"
@@ -894,12 +934,13 @@ source = "regex"
 url = "https://www.arterytek.com/json/Document.json"
 regex = 'AT32_Work_Bench_Linux-x86_64_V([\d.]+)\.zip'
 github_account = "microcai"
+autobump = true
 
 ["dev-games/alcom"]
 source = "github"
 github = "vrc-get/vrc-get"
-use_latest_tag = true
-query = "gui-v"
+use_max_tag = true
+include_regex = "^gui-v\\d+\\.\\d+\\.\\d+$"
 prefix = "gui-v"
 bundle = [
   { id = "artifacts", repo = "gentoo-zh-drafts/alcom", workflow = "generator.yml", tag = "{P}", inputs = { TAG = "gui-v{PV}", P = "{P}" } },
@@ -912,12 +953,14 @@ suite = "stable"
 repo = "main"
 pkg = "unityhub"
 github_account = ["xiaoxi654", "gouwazi"]
+autobump = true
 
 ["dev-go/gotests"]
 source = "github"
 github = "cweill/gotests"
 use_latest_release = true
 prefix = "v"
+autobump = true
 
 ["dev-go/staticcheck"]
 source = "github"
@@ -975,25 +1018,25 @@ github = "yetist/lunar-date"
 use_latest_release = true
 prefix = "v"
 github_account = ["microcai", "gouwazi"]
-
-# no tracking entry yet
-#["dev-libs/qml-material"]
+autobump = true
 
 # packaged from a pinned commit, no tag to compare
 #["dev-libs/qnodeeditor"]
 
-["dev-libs/singleapplication"]
+["dev-libs/v2ray-domain-list-community"]
 source = "github"
-github = "itay-grudev/SingleApplication"
-use_latest_tag = true
-prefix = "v"
-github_account = ["blackteahamburger", "gouwazi"]
+github = "v2fly/domain-list-community"
+use_latest_release = true
+github_account = "blackteahamburger"
+deps = "golang"
+autobump = true
 
-# high update frequency
-#["dev-libs/v2ray-domain-list-community"]
-
-# high update frequency
-#["dev-libs/v2ray-domain-list-community-bin"]
+["dev-libs/v2ray-domain-list-community-bin"]
+source = "github"
+github = "v2fly/domain-list-community"
+use_latest_release = true
+github_account = "CHN-beta"
+autobump = true
 
 ["dev-libs/v2ray-geoip"]
 source = "github"
@@ -1002,11 +1045,19 @@ use_latest_release = true
 github_account = "blackteahamburger"
 autobump = true
 
-# high update frequency
-#["dev-libs/v2ray-geoip-bin"]
+["dev-libs/v2ray-geoip-bin"]
+source = "github"
+github = "v2fly/geoip"
+use_latest_release = true
+github_account = "CHN-beta"
+autobump = true
 
-# high update frequency
-#["dev-libs/v2ray-rules-dat-bin"]
+["dev-libs/v2ray-rules-dat-bin"]
+source = "github"
+github = "Loyalsoldier/v2ray-rules-dat"
+use_latest_release = true
+github_account = "st0nie"
+autobump = true
 
 ["dev-python/adafruit-board-toolkit"]
 source = "pypi"
@@ -1019,6 +1070,12 @@ github = "archspec/archspec"
 use_latest_release = true
 prefix = "v"
 github_account = ["OriPoin", "gouwazi"]
+autobump = true
+
+["dev-python/asyncpg"]
+source = "pypi"
+pypi = "asyncpg"
+github_account = ["liangyongxiang"]
 
 ["dev-python/autopxd2"]
 source = "github"
@@ -1026,6 +1083,7 @@ github = "elijahr/python-autopxd2"
 use_latest_release = true
 prefix = "v"
 github_account = "vowstar"
+autobump = true
 
 ["dev-python/browser-cookie3"]
 source = "github"
@@ -1038,6 +1096,7 @@ source = "github"
 github = "conda/conda"
 use_latest_release = true
 github_account = ["OriPoin", "gouwazi"]
+autobump = true
 
 ["dev-python/conda-libmamba-solver"]
 source = "github"
@@ -1201,6 +1260,7 @@ source = "github"
 github = "Freed-Wu/pyrime"
 use_latest_release = true
 github_account = "Freed-Wu"
+autobump = true
 
 ["dev-python/qasync"]
 source = "pypi"
@@ -1212,15 +1272,17 @@ source = "pypi"
 pypi = "simplesat"
 github_account = "f3rmata"
 
+["dev-python/telethon"]
+source = "pypi"
+pypi = "Telethon"
+github_account = ["liangyongxiang"]
+
 ["dev-python/uv-bin"]
 source = "github"
 github = "astral-sh/uv"
 use_latest_release = true
 prefix = "v"
 autobump = true
-
-# kept in sync with the main tree qt, no nvchecker needed
-#["dev-qt/qtgrpc"]
 
 ["dev-ruby/filelock"]
 source = "github"
@@ -1255,6 +1317,14 @@ github = "orhun/binsider"
 use_latest_release = true
 prefix = "v"
 github_account = "gouwazi"
+autobump = true
+
+["dev-util/claude-code"]
+source = "regex"
+url = "https://downloads.claude.ai/claude-code-releases/latest"
+regex = '^([\d.]+)$'
+github_account = "zakkaus"
+autobump = true
 
 # The snapshot we carry is above upstream 2.0.1, the last release.
 #["dev-util/cmakerc"]
@@ -1295,6 +1365,7 @@ source = "github"
 github = "leoafarias/fvm"
 use_latest_release = true
 deps = "dart"
+autobump = true
 
 ["dev-util/gemini-cli"]
 source = "regex"
@@ -1314,6 +1385,7 @@ source = "regex"
 url = "https://x.ai/cli/stable"
 regex = '^([\d.]+)$'
 github_account = "zakkaus"
+autobump = true
 
 ["dev-util/herdr"]
 source = "github"
@@ -1381,12 +1453,24 @@ use_latest_release = true
 prefix = "v"
 autobump = true
 
-["dev-util/opencode-bin"]
+["dev-util/openchamber-bin"]
 source = "github"
-github = "anomalyco/opencode"
+github = "openchamber/openchamber"
 use_latest_release = true
 prefix = "v"
+autobump = true
+
+["dev-util/opencode-bin"]
+source = "jq"
+url = "https://opencode.ai/update/api/latest/cli/npm"
+filter = ".version"
 github_account = ["xz-dev"]
+autobump = true
+
+["dev-util/opencode-desktop-bin"]
+source = "jq"
+url = "https://opencode.ai/update/api/latest/desktop"
+filter = '.artifacts[] | select(.distribution == "opencode") | .version'
 autobump = true
 
 ["dev-util/osc"]
@@ -1429,6 +1513,26 @@ autobump = true
 # live package only
 #["dev-util/pi-coding-agent-xz"]
 
+["dev-util/qoder-bin"]
+source = "regex"
+url = "https://download.qoder.com/qoder-app/releases/latest-linux.yml"
+regex = 'version: ([\d.]+)'
+github_account = "liangyongxiang"
+
+["dev-util/qodercli-bin"]
+source = "regex"
+url = "https://qoder-ide.oss-accelerate.aliyuncs.com/qodercli/channels/manifest.json"
+regex = '"latest": "([\d.]+)"'
+github_account = "liangyongxiang"
+autobump = true
+
+["dev-util/qoderwake-bin"]
+source = "regex"
+url = "https://download.qoder.com/qoderwake/channels/manifest.json"
+regex = '"latest": "([\d.]+)"'
+github_account = "liangyongxiang"
+autobump = true
+
 ["dev-util/reasonix-bin"]
 source = "github"
 github = "esengine/DeepSeek-Reasonix"
@@ -1450,6 +1554,13 @@ github = "royqh1979/RedPanda-CPP"
 use_latest_release = true
 prefix = "v"
 github_account = ["Dawn-Xu-helloworld", "gouwazi"]
+
+["dev-util/t3code-bin"]
+source = "github"
+github = "pingdotgg/t3code"
+use_latest_release = true
+prefix = "v"
+autobump = true
 
 ["dev-util/tailspin"]
 source = "github"
@@ -1515,6 +1626,7 @@ source = "regex"
 url = "https://zcode.z.ai/en/docs/install"
 regex = 'ZCode-([\d.]+)-linux-x64\.AppImage'
 github_account = "liangyongxiang"
+autobump = true
 
 ["dev-util/zprint-bin"]
 source = "github"
@@ -1564,6 +1676,7 @@ use_latest_release = true
 from_pattern = '^(\d{4}\.\d{3,4}\.\d+)-lazer$'
 to_pattern = '\1'
 github_account = "Puqns67"
+autobump = 3
 
 ["games-emulation/onscripter-yuri"]
 source = "github"
@@ -1627,9 +1740,6 @@ github = "benapetr/TuxManager"
 prefix = "v"
 use_latest_release = true
 github_account = "Puqns67"
-
-# masked, removal on 2026-09-27
-#["gui-apps/waywallen"]
 
 ["kde-misc/plasma-applet-netspeed-widget"]
 source = "github"
@@ -1828,9 +1938,6 @@ use_latest_release = true
 prefix = "v"
 github_account = ["vowstar", "gouwazi"]
 
-# masked, removal on 2026-09-27
-#["media-gfx/open-wallpaper-engine"]
-
 # TODO: very old package
 #["media-gfx/scangearmp"]
 
@@ -1878,9 +1985,6 @@ prefix = "v"
 use_latest_release = true
 github_account = "liuyujielol"
 
-# masked, removal on 2026-09-27
-#["media-plugins/waywallen-display"]
-
 # vendor download, no published version index
 #["media-sound/cider"]
 
@@ -1906,12 +2010,15 @@ github = "go-musicfox/go-musicfox"
 use_latest_release = true
 prefix = "v"
 github_account = ["st0nie", "gouwazi"]
+autobump = true
 
 ["media-sound/harmonoid"]
 source = "github"
 github = "alexmercerind2/harmonoid-releases"
 use_latest_release = true
 prefix = "v"
+from_pattern = '^(.+)-hotfix(\d+)$'
+to_pattern = '\1_p\2'
 github_account = "flying-balloon-cat"
 
 ["media-sound/listen1_desktop-bin"]
@@ -1941,6 +2048,7 @@ github = "YUCLing/open-orpheus"
 use_latest_release = true
 prefix = "v"
 github_account = "Puqns67"
+autobump = true
 
 ["media-sound/qqmusic"]
 source = "regex"
@@ -1954,11 +2062,13 @@ github = "imsyy/SPlayer"
 use_latest_release = true
 prefix = "v"
 github_account = "flying-balloon-cat"
+autobump = true
 
 ["media-sound/spotube-bin"]
 source = "github"
 github = "KRTirtho/spotube"
-use_latest_release = true
+use_max_tag = true
+include_regex = "^v\\d+\\.\\d+\\.\\d+$"
 prefix = "v"
 autobump = true
 github_account = ["AmberisMyShiba", "gouwazi"]
@@ -1969,6 +2079,7 @@ github = "tramhao/termusic"
 use_latest_release = true
 prefix = "v"
 github_account = "liuyujielol"
+autobump = true
 
 ["media-sound/yesplaymusic-bin"]
 source = "github"
@@ -2002,6 +2113,14 @@ from_pattern = '"major":(\d+),"minor":(\d+),"releaseNum":(\d+)'
 to_pattern = '\1.\2.\3'
 github_account = "Jack77793"
 
+["media-video/hov-qt"]
+source = "github"
+github = "HougeLangley/HyperOnlineVideo"
+use_latest_release = true
+prefix = "v"
+github_account = "HougeLangley"
+autobump = true
+
 ["media-video/implay"]
 source = "github"
 github = "tsl0922/ImPlay"
@@ -2028,7 +2147,7 @@ strip_release = true
 github_account = ["xysgh"]
 autobump = true
 autobump_my_pv_url = "https://api.github.com/repos/bggRGjQaUbCoE/PiliPlus/releases/tags/${PV}"
-autobump_my_pv_regex = 'PiliPlus_linux_([^"_]+)_amd64\.tar\.gz'
+autobump_my_pv_regex = 'PiliPlus_linux_([0-9.]+\+[0-9]+)_amd64\.tar\.gz'
 
 # TODO: upstream removed linux support
 #["media-video/tenvideo"]
@@ -2039,6 +2158,7 @@ github = "tsukinaha/tsukimi"
 use_latest_release = true
 prefix = "v"
 github_account = ["irort"]
+autobump = true
 
 ["media-video/wiliwili"]
 source = "github"
@@ -2079,12 +2199,20 @@ source = "github"
 github = "cilium/pwru"
 use_latest_release = true
 prefix = "v"
+autobump = true
 
 ["net-analyzer/realitlscanner"]
 source = "github"
 github = "XTLS/RealiTLScanner"
 use_latest_release = true
 prefix = "v"
+
+["net-analyzer/sslx-bin"]
+source = "github"
+github = "glincker/sslx"
+use_latest_release = true
+prefix = "v"
+autobump = true
 
 ["net-dns/ddns-go"]
 source = "github"
@@ -2093,6 +2221,7 @@ use_latest_release = true
 prefix = "v"
 github_account = "Puqns67"
 deps = { lang = "golang", vendordir = "{P}" }
+autobump = true
 
 ["net-dns/dnslookup"]
 source = "github"
@@ -2116,6 +2245,16 @@ method = "GET"
 regex = 'com.alibabainc.dingtalk_(.*)_amd64.deb'
 github_account = "gouwazi"
 
+# live package only
+#["net-im/luoxu"]
+
+["net-im/telegram-desktop"]
+source = "github"
+github = "telegramdesktop/tdesktop"
+use_latest_release = true
+prefix = "v"
+github_account = "Zakkaus"
+
 ["net-im/tencent-qq"]
 source = "jq"
 url = "https://qq-web.cdn-go.cn/im.qq.com_new/latest/rainbow/pcConfig.json"
@@ -2134,8 +2273,6 @@ source = "regex"
 url = "https://github.com/peeweep/wechat-linux-watcher/raw/refs/heads/master/wechat-linux-version.txt"
 regex = '(.*)'
 github_account = "gouwazi"
-
-#["net-im/wechat-universal-bwrap"]
 
 ["net-im/wemeet"]
 source = "aur"
@@ -2199,6 +2336,7 @@ github = "biliup/biliup-app-new"
 use_latest_release = true
 prefix = "app-v"
 github_account = "123485k"
+autobump = true
 
 ["net-misc/biliup-bin"]
 source = "github"
@@ -2249,6 +2387,7 @@ source = "github"
 github = "simulot/immich-go"
 use_latest_release = true
 prefix = "v"
+autobump = true
 
 ["net-misc/lazyssh-bin"]
 source = "github"
@@ -2269,6 +2408,14 @@ source = "github"
 github = "pendulum-project/ntpd-rs"
 use_latest_release = true
 prefix = "v"
+autobump = true
+
+["net-misc/omnyssh-bin"]
+source = "github"
+github = "timhartmann7/omnyssh"
+use_latest_release = true
+prefix = "v"
+autobump = true
 
 ["net-misc/pcmanx-gtk2"]
 source = "github"
@@ -2295,6 +2442,7 @@ github = "AlynxZhou/reframe"
 use_latest_release = true
 prefix = "v"
 github_account = "Jack77793"
+autobump = true
 
 ["net-misc/remmina-plugin-rustdesk"]
 source = "github"
@@ -2334,7 +2482,7 @@ github = "trzsz/tsshd"
 use_latest_release = true
 prefix = "v"
 github_account = "locez"
-# autobump off: the per-version vendor bundle must be regenerated first -- not a mechanical bump.
+autobump = true
 
 ["net-misc/yaak-bin"]
 source = "github"
@@ -2382,7 +2530,7 @@ prefix = "v"
 
 ["net-proxy/clash-rs"]
 source = "github"
-github = "Watfaq/clash-rs"
+github = "Watfaq-legacy/clash-rs"
 use_latest_release = true
 prefix = "v"
 github_account = "liuyujielol"
@@ -2418,6 +2566,15 @@ bundle_pv = [["_rc", "rc"]]
 # upstream archived
 #["net-proxy/daed"]
 
+["net-proxy/doona"]
+source = "github"
+github = "Zakkaus/doona"
+use_max_tag = true
+prefix = "v"
+from_pattern = '^(.+)-(alpha|beta|rc)\.(\d+)$'
+to_pattern = '\1_\2\3'
+github_account = "zakkaus"
+
 ["net-proxy/flclash-bin"]
 source = "github"
 github = "chen08209/FlClash"
@@ -2425,6 +2582,17 @@ use_latest_release = true
 prefix = "v"
 github_account = ["yangmame"]
 autobump = true
+
+["net-proxy/honk"]
+source = "github"
+github = "daeuniverse/honk"
+use_max_tag = true
+include_regex = '^v\d+\.\d+\.\d+(-(alpha|beta|rc)\.\d+)?$'
+prefix = "v"
+from_pattern = '^(.+)-(alpha|beta|rc)\.(\d+)$'
+to_pattern = '\1_\2\3'
+github_account = "zakkaus"
+deps = "rust"
 
 ["net-proxy/hysteria"]
 source = "github"
@@ -2455,6 +2623,7 @@ prefix = "v"
 from_pattern = '(.*)-(.*)'
 to_pattern = '\1_p\2'
 github_account = ["blackteahamburger", "gouwazi"]
+autobump = true
 
 # TODO: missing KEYWORDS
 #["net-proxy/proxy-server"]
@@ -2517,8 +2686,14 @@ github = "microcai/smartproxy"
 use_latest_tag = true
 prefix = "v"
 
-# high update frequency
-#["net-proxy/trojan-go-fork"]
+["net-proxy/trojan-go-fork"]
+source = "github"
+github = "Potterli20/trojan-go-fork"
+use_latest_release = true
+prefix = "V"
+github_account = "blackteahamburger"
+deps = "golang"
+autobump = true
 
 ["net-proxy/v2ray"]
 source = "github"
@@ -2532,6 +2707,7 @@ source = "github"
 github = "v2fly/v2ray-core"
 use_latest_release = true
 prefix = "v"
+autobump = true
 
 ["net-proxy/v2rayA"]
 source = "github"
@@ -2540,6 +2716,7 @@ use_latest_release = true
 prefix = "v"
 github_account = ["liuyujielol", "Zakkaus"]
 deps = { lang = "golang", modules = ["service", "core"] }
+autobump = true
 
 ["net-proxy/Xray"]
 # XTLS marks new versions as prerelease; track releases only to avoid their breaking changes. Do not switch to use_max_tag.
@@ -2547,6 +2724,7 @@ source = "github"
 github = "XTLS/Xray-core"
 use_latest_release = true
 prefix = "v"
+autobump = true
 
 ["net-proxy/yacd-meta"]
 source = "github"
@@ -2554,6 +2732,7 @@ github = "MetaCubeX/Yacd-meta"
 use_latest_release = true
 prefix = "v"
 github_account = "st0nie"
+autobump = true
 
 ["net-proxy/zashboard"]
 source = "github"
@@ -2590,6 +2769,21 @@ github_account = ["microcai", "gouwazi"]
 
 # live package only
 #["net-wireless/linux-wifi-hotspot"]
+
+["sci-biology/fastani"]
+source = "github"
+github = "ParBLiSS/FastANI"
+use_latest_release = true
+prefix = "v"
+github_account = "peeweep"
+
+["sci-biology/skani"]
+source = "github"
+github = "bluenote-1577/skani"
+use_max_tag = true
+include_regex = "^v\\d+\\.\\d+\\.\\d+$"
+prefix = "v"
+github_account = "zakkaus"
 
 # this website blocked github network
 #["sci-chemistry/vesta"]
@@ -2629,6 +2823,7 @@ github = "leanprover/elan"
 use_latest_release = true
 prefix = "v"
 github_account = "xz-dev"
+autobump = true
 
 ["sci-mathematics/rstudio-desktop-bin"]
 source = "regex"
@@ -2645,6 +2840,9 @@ github = "ggml-org/llama.cpp"
 use_latest_release = true
 prefix = "v"
 github_account = "Puqns67"
+autobump = true
+autobump_build_url = "https://github.com/ggml-org/llama.cpp/releases/download/v${PV}/nightly-tag.txt"
+autobump_build_regex = '(b[0-9]+)'
 
 # key issued by this project, no upstream version to track
 #["sec-keys/openpgp-keys-gentoozh"]
@@ -2722,6 +2920,7 @@ github = "dubeyko/ssdfs-tools"
 use_latest_tag = true
 prefix = "v"
 github_account = "gouwazi"
+autobump = true
 
 # live package only
 #["sys-fs/systemd-zpool-scrub"]
@@ -2785,19 +2984,21 @@ github = "openSUSE/libsolv"
 use_latest_tag = true
 github_account = ["OriPoin", "gouwazi"]
 
-["sys-process/witr"]
-source = "github"
-github = "pranshuparmar/witr"
-use_latest_release = true
-prefix = "v"
-github_account = "liangyongxiang"
-
 ["sys-power/tlpui"]
 source = "github"
 github = "d4nj1/TLPUI"
 use_latest_tag = true
 prefix = "tlpui-"
 github_account = "xz-dev"
+autobump = true
+
+["sys-process/witr"]
+source = "github"
+github = "pranshuparmar/witr"
+use_latest_release = true
+prefix = "v"
+github_account = "liangyongxiang"
+autobump = true
 
 #["virtual/dist-kernel"]
 
@@ -2808,6 +3009,16 @@ github_account = "xz-dev"
 #["virtual/v2ray-domain-list-community"]
 
 #["virtual/v2ray-geoip"]
+
+["www-apps/sillytavern"]
+source = "github"
+github = "SillyTavern/SillyTavern"
+use_max_tag = true
+include_regex = "^\\d+\\.\\d+\\.\\d+$"
+github_account = "liangyongxiang"
+bundle = [
+  { id = "node_modules", repo = "gentoo-zh-drafts/SillyTavern", workflow = "node_modules.yml", tag = "v{PV}", inputs = { version = "{PV}" } },
+]
 
 ["www-client/adspower-global"]
 source = "regex"
@@ -2858,6 +3069,7 @@ source = "github"
 github = "svenstaro/miniserve"
 use_latest_release = true
 prefix = "v"
+autobump = true
 
 ["www-servers/s-ui-bin"]
 source = "github"
@@ -2875,6 +3087,7 @@ github = "cginternals/glbinding"
 use_latest_release = true
 prefix = "v"
 github_account = ["microcai", "gouwazi"]
+autobump = true
 
 # live package only
 #["x11-libs/xcb-imdkit"]
@@ -2940,7 +3153,8 @@ autobump = true
 ["x11-terms/tty7-bin"]
 source = "github"
 github = "l0ng-ai/tty7"
-use_latest_release = true
+use_max_release = true
+include_regex = "^v\\d+\\.\\d+\\.\\d+$"
 prefix = "v"
 autobump = true
 github_account = "gouwazi"

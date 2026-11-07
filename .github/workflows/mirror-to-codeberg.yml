@@ -1,33 +1,36 @@
-name: mirror to codeberg
+name: mirror-to-codeberg
 on:
   workflow_dispatch:
   push:
     branches: [master]
     tags: ['**']
-  delete:
   schedule:
     - cron: '40 4 * * *'
 
 concurrency:
   group: mirror-to-codeberg
 
+permissions:
+  contents: read
+
 jobs:
   mirror:
     runs-on: ubuntu-latest
     if: github.repository == 'gentoo-zh/overlay' && github.actor != 'dependabot[bot]'
     steps:
-    - name: Clone GitHub repository (bare mirror)
+    - name: clone a bare mirror
       run: git clone --mirror "https://github.com/${GITHUB_REPOSITORY}.git" repo.git
 
-    - name: Push branches and tags to Codeberg
+    - name: push branches and tags to codeberg
       working-directory: repo.git
       env:
         SSH_KEY: ${{ secrets.CODEBERG_SSH_KEY }}
       run: |
-        mkdir -p ~/.ssh
+        install -dm700 ~/.ssh
         printf '%s\n' "$SSH_KEY" > ~/.ssh/codeberg_mirror
         chmod 600 ~/.ssh/codeberg_mirror
-        ssh-keyscan codeberg.org >> ~/.ssh/known_hosts 2>/dev/null
-        export GIT_SSH_COMMAND="ssh -i ~/.ssh/codeberg_mirror"
+        # matches the fingerprint at https://docs.codeberg.org/security/ssh-fingerprint/
+        echo 'codeberg.org ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIVIC02vnjFyL+I4RHfvIGNtOgJMe769VTF1VR4EB3ZB' > ~/.ssh/known_hosts
+        export GIT_SSH_COMMAND="ssh -i ~/.ssh/codeberg_mirror -o StrictHostKeyChecking=yes"
         git push --prune git@codeberg.org:gentoo-zh/overlay.git \
           '+refs/heads/*:refs/heads/*' '+refs/tags/*:refs/tags/*'

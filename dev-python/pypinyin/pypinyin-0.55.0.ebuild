@@ -19,13 +19,15 @@ S="${WORKDIR}/python-pinyin-${PV}"
 
 LICENSE="MIT"
 SLOT="0"
-KEYWORDS="~amd64"
+KEYWORDS="~amd64 ~arm64"
 
 EPYTEST_PLUGINS=()
 distutils_enable_tests pytest
 
 src_prepare() {
 	distutils-r1_src_prepare
+	sed -i '/^universal=1$/d' setup.cfg || die
+	sed -i '/License ::/d' setup.py || die
 	sed -i -e '/--cov/d' pytest.ini || die
 }
 

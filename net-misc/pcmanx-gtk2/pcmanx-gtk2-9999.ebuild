@@ -10,13 +10,21 @@ HOMEPAGE="https://github.com/pcman-bbs/pcmanx"
 
 EGIT_REPO_URI="https://github.com/pcman-bbs/pcmanx.git"
 
-LICENSE="GPL-2"
+LICENSE="GPL-2+"
 SLOT="0"
 IUSE="+libnotify +proxy iplookup +wget"
 
 COMMON_DEPEND="
+	dev-libs/glib:2
+	dev-libs/libltdl
 	libnotify? ( x11-libs/libnotify )
+	media-libs/fontconfig
+	media-libs/freetype
+	x11-libs/cairo
+	x11-libs/gdk-pixbuf:2
+	x11-libs/libX11
 	x11-libs/libXft
+	x11-libs/pango
 	>=x11-libs/gtk+-2.4:2
 "
 
